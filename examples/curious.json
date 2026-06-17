@@ -1,0 +1,14 @@
+{
+  "description": "curious head tilt with perky alternating antennas and a slow body sway",
+  "duration": 4.0,
+  "envelope": "hann",
+  "channels": {
+    "head_pitch":    [{"amp": 10, "freq": 0.35, "phase": 0}],
+    "head_yaw":      [{"amp": 16, "freq": 0.25, "phase": 90}],
+    "head_roll":     [{"amp": 8,  "freq": 0.5,  "phase": 0}],
+    "head_z":        [{"amp": 6,  "freq": 0.5,  "phase": 0}],
+    "antenna_left":  [{"amp": 28, "freq": 0.9,  "phase": 0}],
+    "antenna_right": [{"amp": 28, "freq": 0.9,  "phase": 180}],
+    "body_yaw":      [{"amp": 12, "freq": 0.2,  "phase": 0}]
+  }
+}

@@ -1,0 +1,123 @@
+"""Server-side controller to play moves on the physical robot (via the daemon).
+
+Used by the Gradio app's "Connect robot" mode: while connected, selecting a move plays
+it on the real robot — motion through the SDK (``async_play_move``, non-blocking) and
+sound through the ALSA path (:mod:`reachy_motion.audio`), since the SDK's own audio needs
+the GStreamer stack we don't have. The browser viewer separately mirrors the robot's live
+state over the daemon state WebSocket.
+"""
+
+from __future__ import annotations
+
+import threading
+from pathlib import Path
+from typing import Optional
+
+from . import audio
+
+
+class RobotController:
+    def __init__(self) -> None:
+        self._mini = None
+        self._snd = None  # background aplay process
+        self._thread = None  # background play_move thread
+        self._lock = threading.Lock()
+
+    @property
+    def connected(self) -> bool:
+        return self._mini is not None
+
+    def connect(self) -> None:
+        """Connect an SDK client to the running daemon (raises if unavailable)."""
+        from reachy_mini import ReachyMini
+
+        with self._lock:
+            if self._mini is None:
+                self._mini = ReachyMini(media_backend="no_media")
+
+    def disconnect(self) -> None:
+        with self._lock:
+            self._stop_sound()
+            mini, self._mini = self._mini, None
+        if mini is not None:
+            # restore normal hold so the robot isn't left limp/compliant
+            for fn in ("disable_gravity_compensation", "enable_motors", "cancel_move"):
+                try:
+                    getattr(mini, fn)()
+                except Exception:
+                    pass
+
+    def set_mode(self, hand_guide: bool, compliant: bool) -> bool:
+        """Set the robot's hold mode for hand-guiding.
+
+        - hand_guide=False           → normal position hold (``enable_motors``).
+        - hand_guide=True, compliant=False → motors off / free: easiest to move by hand.
+        - hand_guide=True, compliant=True  → gravity compensation: firmer, holds position
+          (needs the daemon on the Placo kinematics engine).
+        """
+        with self._lock:
+            if self._mini is None:
+                return False
+            try:
+                if not hand_guide:
+                    try:
+                        self._mini.disable_gravity_compensation()
+                    except Exception:
+                        pass
+                    self._mini.enable_motors()
+                elif compliant:
+                    self._mini.enable_motors()
+                    self._mini.enable_gravity_compensation()
+                else:
+                    try:
+                        self._mini.disable_gravity_compensation()
+                    except Exception:
+                        pass
+                    self._mini.disable_motors()
+                return True
+            except Exception as e:  # noqa: BLE001
+                print(f"[robot_control] set_mode error: {e}")
+                return False
+
+    def _stop_sound(self) -> None:
+        if self._snd is not None:
+            try:
+                self._snd.terminate()
+            except Exception:
+                pass
+            self._snd = None
+
+    def play(self, move, wav: Optional[str | Path] = None) -> None:
+        """Play a move on the robot now (motion + optional sound). Non-blocking.
+
+        Cancels any move/sound already in progress so changing the selection interrupts
+        cleanly. ``play_move`` is blocking, so it runs in a background thread; cancellation
+        is via the SDK's ``cancel_move()``.
+        """
+        with self._lock:
+            mini = self._mini
+            if mini is None:
+                return
+            try:
+                mini.cancel_move()  # signal any in-flight play_move to stop
+            except Exception:
+                pass
+            self._stop_sound()
+        prev = self._thread
+        if prev is not None and prev.is_alive():
+            prev.join(timeout=1.5)
+
+        def _run():
+            try:
+                mini.play_move(move, sound=False, initial_goto_duration=1.0)
+            except Exception as e:  # noqa: BLE001
+                print(f"[robot_control] play_move error: {e}")
+
+        self._thread = threading.Thread(target=_run, daemon=True)
+        self._thread.start()
+        if wav and Path(wav).exists():
+            try:
+                with self._lock:
+                    self._snd = audio.play_wav(wav, blocking=False)
+            except Exception as e:  # noqa: BLE001
+                print(f"[robot_control] sound error: {e}")
