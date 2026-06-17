@@ -12,3 +12,6 @@ wheels/
 # generated moves
 out/
 MUJOCO_LOG.TXT
+
+# user-saved poses
+poses.json

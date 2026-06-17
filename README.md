@@ -69,7 +69,9 @@ have the head 4×4 (not the 7 Stewart joint values, and IK to them is non-finite
 moves), so we hide the leg linkage, reparent the head platform (`xl_330`) under a
 world-aligned control frame, and per frame set `body_yaw` + antenna joints + the head 4×4.
 
-**Connect mode (top-left, above the Move picker):** "Connect robot" does two things —
+**Simulator / Connected tabs (top-left):** the mode tab replaces the old connect button.
+**Simulator** (default) is off-robot preview; **Connected** connects to the robot and turns
+the UI + 3D background **dark orange** as a clear live-robot indicator. Switching to Connected
 (1) the browser opens the daemon's live state WebSocket
 (`ws://<host>:8000/api/state/ws/full?frequency=30&with_head_joints=true&use_pose_matrix=true`)
 and feeds each message into `updateJoints`, so the 3D robot **mirrors the physical one** in
@@ -91,10 +93,20 @@ normal hold (`enable_motors`). **Compliant** needs the daemon on Placo
 (`uv add "reachy-mini[placo-kinematics]"` + system `liburdfdom-dev`, then
 `reachy-mini-daemon --kinematics-engine Placo`); free hand-guide works on any daemon.
 
-**🎮 Joystick control (gamepad)** — drive the robot with a connected gamepad (browser
-Gamepad API). Mapping: **left stick** = head translate (x/y), **right stick** = look
-(pitch/yaw), **bumpers** = body turn, **triggers** = height (z), **A/Y** = antennas. It
-integrates stick input into a target pose (clamped to safe ranges) and streams a
+**🎮 Joystick control (gamepad)** — works in both modes. In **Connected** it streams to the
+robot; in **Simulator** it's a **free-control** mode that drives the 3D robot directly
+(the full Stewart rig renders — joint angles come from the Rust **inverse kinematics compiled to
+WASM**, vendored under `assets/reachy_web/kin/`, the same IK the robot/SDK use). It snaps to the
+canonical **ready pose** (SDK `INIT_HEAD_POSE`
+identity + `INIT_ANTENNAS` ±10°) and free-controls from there. The same ready pose is applied on
+entering a tab and on arming joystick (Connected uses `goto_ready` = enable motors + go to INIT).
+The Move dropdown starts empty (the robot rests at the ready pose until you pick a move). A collapsible **Gamepad input**
+panel shows live axes/buttons (html5-gamepad-test style). Mapping: **left stick** = head translate (x/y), **right stick** = look
+(pitch/yaw), **shoulders** = antennas (LT/LB = left up/down, RT/RB = right up/down),
+**d-pad** = height (up/down) and body turn (left/right), **L3** (left-stick click) =
+ease to the **L3 reset pose** (chosen in the Poses panel; neutral if unset), **R3** (right-stick
+click) = save the current pose. It runs on a steady `setInterval` with smoothed,
+integrated stick input (clamped to safe ranges) and streams a
 `FullBodyTarget` to the daemon's `/api/move/ws/set_target` WebSocket at ~25 Hz; the live
 mirror + chart show the robot following. Mutually exclusive with hand-guide/compliant (it
 switches the robot to normal hold so targets are accepted). Sign/axis conventions follow the
@@ -105,6 +117,22 @@ desktop app and may need flipping for your pad in `JOY`/`joyLoop` (`src/reachy_m
 > is `metalness=1`, and merging parts smeared/inverted normals. The MuJoCo *video* path
 > (`dataset.preview` / `render_move.py`) still exists for shareable motion+sound MP4s, but
 > its head-pose→Stewart IK is non-finite on some moves.
+
+### Poses
+
+A small on-disk **poses** dataset (`poses.json`) of named single poses, in a "Poses" panel
+above Move:
+- **Save** the current pose — the 💾 button, **spacebar**, or **R3** (captures the joystick
+  target, or the current move frame if not joysticking).
+- **Go to pose** dropdown recalls a pose onto the 3D view and the robot. It's mode-aware:
+  when idle it uses a smooth `goto_target`; while **joysticking** it eases the joystick
+  target there (a `goto` would fight the live `set_target` stream).
+- 🗑 **deletes** the selected pose.
+- **L3 reset pose** dropdown chooses which saved pose **L3** eases the robot to (neutral if
+  unset).
+
+A pose is the command vector `{x,y,z,roll,pitch,yaw, antL, antR, body}`. See
+`src/reachy_motion/poses.py`.
 
 ## See a single move (render to video)
 

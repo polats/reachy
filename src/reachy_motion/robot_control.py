@@ -87,6 +87,46 @@ class RobotController:
                 pass
             self._snd = None
 
+    def goto_pose(self, head, antennas, body_yaw: float, duration: float = 1.0) -> bool:
+        """Smoothly move the robot to a saved pose (head 4x4, antennas, body). Non-jerky."""
+        with self._lock:
+            if self._mini is None:
+                return False
+            try:
+                self._mini.cancel_move()
+            except Exception:
+                pass
+            self._stop_sound()
+            try:
+                self._mini.goto_target(head=head, antennas=antennas, body_yaw=body_yaw,
+                                       duration=duration)
+                return True
+            except Exception as e:  # noqa: BLE001
+                print(f"[robot_control] goto_pose error: {e}")
+                return False
+
+    def goto_ready(self, duration: float = 1.0) -> bool:
+        """Move the robot to the canonical ready pose (SDK INIT head + ±10° antennas)."""
+        import numpy as np
+        from reachy_mini.utils import create_head_pose
+
+        with self._lock:
+            if self._mini is None:
+                return False
+            try:
+                self._mini.cancel_move()
+            except Exception:
+                pass
+            try:
+                self._mini.enable_motors()
+                self._mini.goto_target(head=create_head_pose(),
+                                       antennas=np.array([-0.1745, 0.1745]),
+                                       body_yaw=0.0, duration=duration)
+                return True
+            except Exception as e:  # noqa: BLE001
+                print(f"[robot_control] goto_ready error: {e}")
+                return False
+
     def play(self, move, wav: Optional[str | Path] = None) -> None:
         """Play a move on the robot now (motion + optional sound). Non-blocking.
 

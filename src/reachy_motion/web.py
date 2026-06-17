@@ -30,6 +30,51 @@ def _kin():
     return _KIN
 
 
+def _pose_head_matrix(pose: dict):
+    from reachy_mini.utils import create_head_pose
+
+    return create_head_pose(
+        x=pose["x"], y=pose["y"], z=pose["z"],
+        roll=pose["roll"], pitch=pose["pitch"], yaw=pose["yaw"],
+        mm=False, degrees=False,
+    )
+
+
+# the canonical "ready" pose (SDK: INIT_HEAD_POSE = identity, INIT_ANTENNAS = ±10°, body 0)
+READY_POSE = {"x": 0.0, "y": 0.0, "z": 0.0, "roll": 0.0, "pitch": 0.0, "yaw": 0.0,
+              "antL": -0.1745, "antR": 0.1745, "body": 0.0}
+
+
+def ready_render() -> dict:
+    """The ready pose as an updateJoints payload for the viewer (single source of truth)."""
+    return pose_to_render(READY_POSE)
+
+
+def pose_to_render(pose: dict) -> dict:
+    """Pose (command vector) -> payload the 3D viewer's updateJoints consumes."""
+    H = _pose_head_matrix(pose)
+    try:
+        q = _kin().ik(H, float(pose.get("body", 0.0)))
+        q = [float(x) for x in q] if np.all(np.isfinite(q)) else [0.0] * 7
+    except Exception:
+        q = [0.0] * 7
+    return {
+        "head_pose": [float(x) for x in H.flatten()],
+        "head_joints": q,
+        "antennas_position": [float(pose["antL"]), float(pose["antR"])],
+        "body_yaw": float(pose.get("body", 0.0)),
+    }
+
+
+def pose_to_goto(pose: dict):
+    """Pose -> (head 4x4, antennas array, body_yaw) for ReachyMini.goto_target."""
+    return (
+        _pose_head_matrix(pose),
+        np.array([float(pose["antL"]), float(pose["antR"])]),
+        float(pose.get("body", 0.0)),
+    )
+
+
 def move_trajectory(name: str, library: str, fps: int = 40) -> dict:
     """Downsample a move into a compact JSON trajectory for the browser viewer.
 
@@ -101,42 +146,236 @@ const PASSIVE_JOINT_NAMES = [];
 for (let i=1;i<=7;i++) PASSIVE_JOINT_NAMES.push(`passive_${i}_x`,`passive_${i}_y`,`passive_${i}_z`);
 
 const V = { ready:false, traj:null, t:0, dur:0, playing:true, robot:null, jointMap:{},
-            calcPassive:null, buildHeadPose:null, audio:null, live:false, ws:null,
+            calcPassive:null, buildHeadPose:null, ik:null, audio:null, live:false, ws:null,
             liveBuf:[], liveWindow:8, liveLast:0,
-            joy:{ on:false, ws:null, raf:0, last:0, t:0, warned:false, tgt:null } };
+            joy:{ on:false, ws:null, timer:0, warned:false, tgt:null, phase:null, fps:null,
+                  prevL3:false, prevR3:false } };
 
 // gamepad teleop tuning (ranges/speeds mirror the desktop app)
-const JOY = { dead:0.12, posSpeed:0.06, rotSpeed:0.9, zSpeed:0.04, bodySpeed:0.9, antSpeed:2.5,
+const JOY = {
+  dt:1/30,            // fixed tick (steady setInterval, not rAF → no dt spikes / render-stall jerks)
+  dead:0.12,
+  smooth:0.35,        // input low-pass (EMA) factor — higher = snappier, lower = smoother
+  posSpeed:0.06, rotSpeed:0.9, zSpeed:0.04, bodySpeed:0.9, antSpeed:2.5,
   lim:{ pos:0.05, z:0.05, pitch:0.8, yaw:1.2, roll:0.5, body:1.0, ant:2.79 } };
 const _clamp = (v,a) => Math.max(-a, Math.min(a, v));
 const _dz = v => Math.abs(v) < JOY.dead ? 0 : v;
 
-function joyLoop(){
-  if (!V.joy.on) return;
-  V.joy.raf = requestAnimationFrame(joyLoop);
-  const pads = navigator.getGamepads ? navigator.getGamepads() : [];
-  let gp = null; for (const p of pads){ if (p){ gp = p; break; } }
-  const now = performance.now()/1000; const dt = Math.min(0.05, now-(V.joy.t||now)); V.joy.t = now;
-  if (!gp){ if (!V.joy.warned){ setStatus('🎮 no gamepad — connect one and press a button', '#d9a441'); V.joy.warned=true; } return; }
-  if (V.joy.warned){ V.joy.warned=false; setStatus('🎮 Joystick — L stick move · R stick look · bumpers turn · triggers height', '#4cae4c'); }
-  const ax = gp.axes, bt = gp.buttons, tg = V.joy.tgt, L = JOY.lim;
-  const lx=_dz(ax[0]||0), ly=_dz(ax[1]||0), rx=_dz(ax[2]||0), ry=_dz(ax[3]||0);
-  tg.x     = _clamp(tg.x     + (-ly)*JOY.posSpeed*dt, L.pos);
-  tg.y     = _clamp(tg.y     + ( lx)*JOY.posSpeed*dt, L.pos);
-  tg.pitch = _clamp(tg.pitch + (-ry)*JOY.rotSpeed*dt, L.pitch);
-  tg.yaw   = _clamp(tg.yaw   + ( rx)*JOY.rotSpeed*dt, L.yaw);
-  const lb=(bt[4]&&bt[4].value)||0, rb=(bt[5]&&bt[5].value)||0;   // bumpers -> body yaw
-  tg.by    = _clamp(tg.by + (rb-lb)*JOY.bodySpeed*dt, L.body);
-  const lt=(bt[6]&&bt[6].value)||0, rt=(bt[7]&&bt[7].value)||0;   // triggers -> height (z)
-  tg.z     = _clamp(tg.z + (rt-lt)*JOY.zSpeed*dt, L.z);
-  const aUp=(bt[3]&&bt[3].pressed)?1:0, aDn=(bt[0]&&bt[0].pressed)?1:0;  // Y/A -> antennas
-  const ad=(aUp-aDn)*JOY.antSpeed*dt; tg.aL=_clamp(tg.aL+ad,L.ant); tg.aR=_clamp(tg.aR+ad,L.ant);
-  if (now - V.joy.last > 0.04 && V.joy.ws && V.joy.ws.readyState === 1){
-    V.joy.last = now;
+// ---- FPS teleop model, ported from ebubar/teleop (HF: "FPS-style gamepad control with
+// dynamic safety limits"). State is in DEGREES + mm; head yaw is RELATIVE to the body. ----
+const FPS = {
+  hz:60, dead:0.15, axisLock:2.0, smooth:0.7,        // per-60Hz-tick constants (verbatim)
+  speed:{ head:3.5, ant:5.0, z:1.0, base:2.5 },      // deg/tick (z in mm/tick)
+  // verified all-reachable envelope (81/81 corners incl. body-yaw): no detach anywhere inside it
+  lim:{ neck:30, pitch:15, zMin:-15, zMax:15, ant:60, base:90 } };
+const _fdz = v => Math.abs(v) < FPS.dead ? 0 : v;
+function fpsSnap(x, y){                                // axis-lock: kill accidental diagonals
+  if (Math.abs(x) < FPS.dead && Math.abs(y) < FPS.dead) return [x, y];
+  if (Math.abs(x) > Math.abs(y)*FPS.axisLock) y = 0;
+  else if (Math.abs(y) > Math.abs(x)*FPS.axisLock) x = 0;
+  return [x, y];
+}
+function fpsClampDyn(j){    // clamp to the verified-reachable fixed envelope (no FK / no detach inside)
+  const L = FPS.lim;
+  j.z     = Math.max(L.zMin, Math.min(j.z, L.zMax));
+  j.neck  = Math.max(-L.neck,  Math.min(j.neck,  L.neck));
+  j.pitch = Math.max(-L.pitch, Math.min(j.pitch, L.pitch));
+  j.base  = Math.max(-L.base,  Math.min(j.base,  L.base));
+  j.antL  = Math.max(-L.ant,   Math.min(j.antL,  L.ant));
+  j.antR  = Math.max(-L.ant,   Math.min(j.antR,  L.ant));
+}
+function fpsReadyTargets(j){ j.neck=0; j.base=0; j.pitch=0; j.z=0; j.antL=-10; j.antR=10; }  // ready (±10° ant)
+function fpsReady(j){ fpsReadyTargets(j); j.cNeck=0; j.cBase=0; j.cPitch=0; j.cZ=0; j.cAntL=-10; j.cAntR=10; }
+function fpsFromPose(j, p){                            // SI command-vector pose -> degree/mm targets
+  const G = 180/Math.PI;
+  j.base = p.body*G; j.neck = p.yaw*G - j.base; j.pitch = p.pitch*G;
+  j.z = p.z*1000; j.antL = p.antL*G; j.antR = p.antR*G;
+}
+function fpsToTgt(j, tg){                              // smoothed state -> our SI command vector
+  const D = Math.PI/180;
+  tg.x = 0; tg.y = 0; tg.roll = 0;
+  tg.pitch = j.cPitch*D;
+  tg.yaw = (j.cBase + j.cNeck)*D;                      // head pose yaw = body + neck (relative)
+  tg.z = j.cZ/1000;                                    // mm -> m
+  tg.by = j.cBase*D; tg.aL = j.cAntL*D; tg.aR = j.cAntR*D;
+}
+function fpsSmoothAndPush(j, tg){
+  fpsClampDyn(j);
+  const s = FPS.smooth;
+  j.cNeck = j.neck*s + j.cNeck*(1-s);  j.cPitch = j.pitch*s + j.cPitch*(1-s);
+  j.cZ    = j.z*s    + j.cZ*(1-s);     j.cBase  = j.base*s  + j.cBase*(1-s);
+  j.cAntL = j.antL*s + j.cAntL*(1-s);  j.cAntR  = j.antR*s  + j.cAntR*(1-s);
+  fpsToTgt(j, tg);
+  sendTarget(tg);                                      // robot stream (sim display via rAF driveSim)
+}
+
+// fallback rig config if window.REACHY_READY is missing (head joints + identity head pose)
+const SIM_INIT16 = [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1];
+const SIM_INIT_JOINTS = [0, 0.62655, -0.62654, 0.62654, -0.62654, 0.62654, -0.62654];
+function readyPayload(){
+  return window.REACHY_READY ||
+    { head_pose: SIM_INIT16, head_joints: SIM_INIT_JOINTS, antennas_position:[-0.1745,0.1745], body_yaw:0 };
+}
+const JOY_MSG = '🎮 Joystick — L stick look · R stick turn + height · L2/R2 antennas · L3 ready · R3 save';
+
+// head pose -> row-major 4x4 (matches the SDK's create_head_pose: intrinsic xyz euler + translation)
+function poseMatrix(tg){
+  const cr=Math.cos(tg.roll), sr=Math.sin(tg.roll);
+  const cp=Math.cos(tg.pitch), sp=Math.sin(tg.pitch);
+  const cy=Math.cos(tg.yaw), sy=Math.sin(tg.yaw);
+  return [
+    cp*cy,           -cp*sy,          sp,             tg.x,
+    cr*sy+sr*sp*cy,  cr*cy-sr*sp*sy, -sr*cp,          tg.y,
+    sr*sy-cr*sp*cy,  sr*cy+cr*sp*sy,  cr*cp,          tg.z,
+    0, 0, 0, 1,
+  ];
+}
+
+// static ready pose (shown when nothing is playing / dropdown empty / entering Simulator)
+function showReady(){
+  if (!V.robot || !V.ready) return;
+  updateJoints(readyPayload());
+  V.robot.updateMatrixWorld(true);
+}
+
+// start active joystick free-control from the ready pose
+function startControl(){
+  if (!V.joy.on || V.joy.phase === 'control') return;
+  V.joy.fps = {}; fpsReady(V.joy.fps);              // start at the ready pose
+  V.joy.lastGood = null;
+  V.joy.tgt = { x:0,y:0,z:0,roll:0,pitch:0,yaw:0,aL:0,aR:0,by:0 };
+  fpsToTgt(V.joy.fps, V.joy.tgt);
+  V.joy.prevL3 = false; V.joy.prevR3 = false;
+  V.joy.phase = 'control';
+  if (!V.joy.timer) V.joy.timer = setInterval(joyTick, 1000/FPS.hz);   // ~60 Hz like the source
+  if (!V.live) driveSim(V.joy.tgt);
+}
+
+// auto-enable joystick control when a gamepad is present AND the Control sub-tab is open
+// (no checkbox). Works in both modes — setJoystick branches on V.live internally.
+function autoControl(){
+  if (V.ready){
+    const viz = document.getElementById('gamepad-viz');
+    const controlTab = !!(viz && viz.offsetParent);     // Control sub-tab visible
+    const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+    let gp = false; for (const p of pads){ if (p){ gp = true; break; } }
+    if (controlTab && gp && !V.joy.on) window.ReachyViewer.setJoystick(true);
+    else if ((!controlTab || !gp) && V.joy.on) window.ReachyViewer.setJoystick(false);
+    else if (!V.live && controlTab && !gp && !V.joy.on) showReady();   // Control tab, waiting for a pad
+  }
+  setTimeout(autoControl, 250);
+}
+
+// live gamepad tester (axes bars + button grid), like html5-gamepad-test
+function gamepadViz(){
+  const el = document.getElementById('gamepad-viz');
+  if (el && el.offsetParent !== null){            // only render when the panel is open/visible
+    const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+    let gp = null; for (const p of pads){ if (p){ gp = p; break; } }
+    if (!gp){
+      el.innerHTML = '<div style="opacity:.6;padding:6px 0">No gamepad detected — press a button on it.</div>';
+    } else {
+      let h = `<div style="font-size:11px;opacity:.7;margin-bottom:5px">${gp.id.slice(0,46)}</div>`;
+      h += '<div style="display:flex;flex-direction:column;gap:3px">';
+      gp.axes.forEach((v, i) => {
+        const pct = ((v + 1) / 2 * 100).toFixed(1);
+        h += `<div style="display:flex;align-items:center;gap:6px;font-size:11px">
+                <span style="width:30px;opacity:.7">ax${i}</span>
+                <div style="flex:1;height:8px;background:rgba(255,255,255,.08);border-radius:4px;position:relative">
+                  <div style="position:absolute;left:50%;top:0;width:1px;height:8px;background:rgba(255,255,255,.2)"></div>
+                  <div style="position:absolute;left:${pct}%;top:-2px;width:4px;height:12px;background:#fb923c;border-radius:2px;transform:translateX(-50%)"></div>
+                </div>
+                <span style="width:38px;text-align:right;font-variant-numeric:tabular-nums">${v.toFixed(2)}</span>
+              </div>`;
+      });
+      h += '</div><div style="display:grid;grid-template-columns:repeat(6,1fr);gap:3px;margin-top:7px">';
+      gp.buttons.forEach((b, i) => {
+        const on = b.pressed, a = (0.06 + b.value * 0.5).toFixed(2);
+        h += `<div style="font-size:10px;text-align:center;padding:4px 0;border-radius:4px;
+                background:${on ? '#ea580c' : 'rgba(255,255,255,' + a + ')'};
+                color:${on ? '#fff' : '#aaa'}">${i}</div>`;
+      });
+      h += '</div>';
+      el.innerHTML = h;
+    }
+  }
+  setTimeout(gamepadViz, 60);                      // ~16 Hz, cheap when panel closed
+}
+
+function sendTarget(tg){
+  if (V.live && V.joy.ws && V.joy.ws.readyState === 1){
     V.joy.ws.send(JSON.stringify({
       target_head_pose:{x:tg.x,y:tg.y,z:tg.z,roll:tg.roll,pitch:tg.pitch,yaw:tg.yaw},
       target_antennas:[tg.aL,tg.aR], target_body_yaw:tg.by }));
   }
+}
+
+function joyTick(){
+  if (!V.joy.on || V.joy.phase !== 'control') return;
+  const tg = V.joy.tgt, j = V.joy.fps; if (!tg || !j) return;
+  const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+  let gp = null; for (const p of pads){ if (p){ gp = p; break; } }
+  if (!gp){
+    if (!V.joy.warned){ setStatus('🎮 no gamepad — connect one and press a button', '#d9a441'); V.joy.warned=true; }
+    fpsSmoothAndPush(j, tg);   // no pad: still settle toward targets (L3/recall) without input
+    return;
+  }
+  if (V.joy.warned){ V.joy.warned=false; setStatus(JOY_MSG, '#4cae4c'); }
+  const ax = gp.axes, bt = gp.buttons;
+  const v = (b) => (bt[b] && (bt[b].value || (bt[b].pressed ? 1 : 0))) || 0;
+
+  // L3 -> reset to the L3/ready pose ; R3 -> save current pose
+  const l3 = !!(bt[10] && bt[10].pressed);
+  if (l3 && !V.joy.prevL3){ const D = window.REACHY_DEFAULT_POSE; if (D) fpsFromPose(j, D); else fpsReadyTargets(j); }
+  V.joy.prevL3 = l3;
+  const r3 = !!(bt[11] && bt[11].pressed);
+  if (r3 && !V.joy.prevR3) captureAndSave();
+  V.joy.prevR3 = r3;
+
+  // integrate (ebubar/teleop mapping): L stick = neck pan/tilt, R stick = body yaw + height,
+  // L2/L1 + R2/R1 = antennas. State accumulates in degrees/mm.
+  const [rx, ry] = fpsSnap(ax[0]||0, ax[1]||0);
+  j.neck  -= _fdz(rx)*FPS.speed.head;
+  j.pitch -= _fdz(ry)*FPS.speed.head;
+  j.base  -= _fdz(ax[2]||0)*FPS.speed.base;
+  j.z     -= _fdz(ax[3]||0)*FPS.speed.z;
+  const L2 = v(6), R2 = v(7);
+  if (L2 > 0.1) j.antL += FPS.speed.ant*L2;
+  if (bt[4] && bt[4].pressed) j.antL -= FPS.speed.ant;
+  if (R2 > 0.1) j.antR -= FPS.speed.ant*R2;
+  if (bt[5] && bt[5].pressed) j.antR += FPS.speed.ant;
+
+  fpsSmoothAndPush(j, tg);
+}
+
+// sim free-control: compute the Stewart joints from the head pose via the WASM IK, then drive
+// the FULL rig (legs included) through updateJoints — same path as recorded playback.
+const HEAD_Z_OFFSET = 0.177;   // SDK ik() adds this to z before solving (verified vs server IK)
+
+function _ikStewart(M, by){                        // 6 stewart joints, or null if unreachable
+  const Mik = M.slice(); Mik[11] += HEAD_Z_OFFSET;  // IK frame (z offset added, like the SDK)
+  try {
+    const st = V.ik.inverse_kinematics(new Float64Array(Mik), by);
+    return (st && st.length === 6 && st.every(v => Number.isFinite(v))) ? st : null;  // NaN = unreachable
+  } catch(e){ return null; }
+}
+function _headSnap(j){ return { neck:j.neck, base:j.base, pitch:j.pitch, z:j.z,
+  cNeck:j.cNeck, cBase:j.cBase, cPitch:j.cPitch, cZ:j.cZ }; }
+
+// sim free-control: Stewart joints from the head pose via WASM IK -> full rig (legs included).
+// Joystick targets are clamped to a verified-reachable envelope (FPS.lim), so the IK is always
+// solvable inside it; the cheap NaN backstop below only fires if something slips out.
+function driveSim(tg){
+  if (!V.robot || !V.ik) return;
+  let M = poseMatrix(tg), st = _ikStewart(M, tg.by);     // null only if IK is NaN
+  if (!st && V.joy.fps && V.joy.lastGood){               // stateless backstop (no FK -> no drift/stuck)
+    Object.assign(V.joy.fps, V.joy.lastGood);
+    fpsToTgt(V.joy.fps, tg); M = poseMatrix(tg); st = _ikStewart(M, tg.by);
+  }
+  if (!st) return;
+  updateJoints({ head_pose: M, head_joints: [tg.by, st[0],st[1],st[2],st[3],st[4],st[5]],
+                 antennas_position:[tg.aL, tg.aR], body_yaw: tg.by });
+  if (V.joy.fps) V.joy.lastGood = _headSnap(V.joy.fps);
 }
 
 function parseUrdfColors(urdfText){
@@ -263,6 +502,28 @@ function chartScrub(clientX){
   if (V.ready && V.traj && !V.live) applyFrame();   // immediately reflect the scrubbed pose
 }
 
+// ---- poses: capture the current pose and push it to the gradio backend ----
+function currentPose(){
+  if (V.joy.on && V.joy.tgt){
+    const t = V.joy.tgt;
+    return {x:t.x,y:t.y,z:t.z,roll:t.roll,pitch:t.pitch,yaw:t.yaw,antL:t.aL,antR:t.aR,body:t.by};
+  }
+  if (V.traj){
+    const ts = V.traj.time; let i=1; while (i<ts.length && ts[i]<V.t) i++;
+    const k = Math.max(0, i-1), m = V.traj.head[k], e = mat16euler(m), R = Math.PI/180;
+    return {x:m[3],y:m[7],z:m[11], roll:e[0]*R, pitch:e[1]*R, yaw:e[2]*R,
+            antL:V.traj.antennas[k][0], antR:V.traj.antennas[k][1], body:V.traj.body_yaw[k]};
+  }
+  return null;
+}
+
+function captureAndSave(){
+  const p = currentPose();
+  if (!p){ setStatus('nothing to save yet', '#d9a441'); return; }
+  const btn = document.querySelector('#pose_save_btn button') || document.getElementById('pose_save_btn');
+  if (btn){ btn.click(); setStatus('💾 pose saved', '#4cae4c'); }   // js getCurrentPose() supplies the value
+}
+
 // their updateJoints(): drive the full Stewart platform + passive joints + antennas
 function updateJoints(data){
   if (!V.robot) return;
@@ -328,13 +589,25 @@ window.ReachyViewer = {
     // ground shadow catcher
     const ground = new THREE.Mesh(new THREE.PlaneGeometry(2,2), new THREE.ShadowMaterial({opacity:0.3}));
     ground.rotation.x = -Math.PI/2; ground.receiveShadow = true; scene.add(ground);
-    scene.add(new THREE.GridHelper(1.0, 20, 0x2c3a57, 0x1c2740));
+    V.grid = new THREE.GridHelper(1.0, 20, 0x2c3a57, 0x1c2740); scene.add(V.grid);
     Object.assign(V, {scene, cam, r, ctrl});
     V.audio = document.getElementById('reachy-audio');
 
     // kinematics (their passive-joint solver)
     try { const K = await import(kinUrl); V.calcPassive = K.calculatePassiveJoints; V.buildHeadPose = K.buildHeadPoseMatrix; }
     catch(e){ console.error('Kinematics import failed', e); }
+
+    // load the Rust IK (WASM) so joystick control can compute Stewart joints -> full rig renders
+    (async () => {
+      try {
+        const ik = await import(window.REACHY_IK_WASM_URL);
+        await ik.default();                                   // init wasm (resolves _bg.wasm same dir)
+        const data = await (await fetch(window.REACHY_IK_DATA_URL)).text();
+        ik.init_kinematics(data);
+        V.ik = ik;
+        console.log('IK wasm ready');
+      } catch(e){ console.error('IK wasm load failed', e); }
+    })();
 
     // --- load URDF + per-part DRACO meshes (their RobotManager) ---
     const urdfText = await (await fetch(urdfUrl)).text();
@@ -375,17 +648,28 @@ window.ReachyViewer = {
       robot.traverse(c => { if (c.isURDFJoint) V.jointMap[c.name] = c;
                             if (c.isMesh){ c.castShadow=true; c.receiveShadow=true; } });
       V.ready = true;
-      if (V.traj && V.traj.audio && V.audio){ V.audio.src = V.traj.audio; V.audio.play().catch(()=>{}); }
+      if (V.traj){ if (V.traj.audio && V.audio){ V.audio.src = V.traj.audio; V.audio.play().catch(()=>{}); } }
+      else showReady();   // empty dropdown -> static ready pose
     }, undefined, (e)=> console.error('URDF load error', e));
 
     const clock = new THREE.Clock();
     const loop = () => {
       requestAnimationFrame(loop);
       const dt = clock.getDelta();
-      if (V.ready && V.traj && !V.live){   // recorded playback (paused while mirroring live)
-        if (V.audio && V.audio.src && !V.audio.paused) V.t = Math.min(V.audio.currentTime, V.dur);
-        else if (V.playing){ V.t += dt; if (V.t > V.dur) V.t = 0; }
-        applyFrame();
+      if (V.ready && !V.live){
+        const mp = V.moveEl || (V.moveEl = document.getElementById('move-pick'));
+        const animateActive = !!(mp && mp.offsetParent);   // Animate sub-tab visible
+        if (V.joy.on && V.joy.phase === 'control'){
+          driveSim(V.joy.tgt);                      // sim free-control: IK -> full rig, every frame
+        } else if (V.traj && !V.joy.on && animateActive){
+          // drive playback on its own clock (NOT slaved to audio.currentTime — that freezes the
+          // move at frame 0 whenever audio stalls / has no device). Audio plays alongside, best-effort.
+          if (V.playing){
+            V.t += dt;
+            if (V.t > V.dur){ V.t = 0; if (V.audio && V.audio.src){ try { V.audio.currentTime = 0; } catch(e){} } }
+          }
+          applyFrame();
+        }
       }
       ctrl.update(); r.render(scene, cam);
     };
@@ -416,11 +700,21 @@ window.ReachyViewer = {
       window.addEventListener('resize', () => { if (V.traj) buildChart(V.traj); });
     }
     if (V.traj) buildChart(V.traj);
+
+    // spacebar -> save the current pose
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' && !/^(INPUT|TEXTAREA|SELECT)$/.test((e.target && e.target.tagName) || '')){
+        e.preventDefault(); captureAndSave();
+      }
+    });
+
+    gamepadViz();    // start the live gamepad tester (self-schedules)
+    autoControl();   // auto-enable control when a gamepad is on the Control sub-tab
   },
 
   playMove(traj){
-    if (typeof traj === 'string'){ if (!traj) return; traj = JSON.parse(traj); }
-    if (!traj || !traj.time) return;
+    if (typeof traj === 'string'){ traj = traj ? JSON.parse(traj) : null; }
+    if (!traj || !traj.time){ V.traj = null; showReady(); return; }   // empty selection -> ready
     V.traj = traj; V.dur = traj.time[traj.time.length-1]; V.t = 0; V.playing = true;
     if (!V.live) buildChart(traj);   // while live, the rolling scope owns the chart
     if (V.audio){
@@ -454,24 +748,58 @@ window.ReachyViewer = {
     V.liveBuf = []; if (V.traj) buildChart(V.traj); },  // restore recorded chart
   toggleRobot(){ if (V.live || V.ws){ this.setJoystick(false); this.disconnectRobot(); } else this.connectRobot(); },
 
+  setMode(connected){
+    if (connected){ this.connectRobot(); }   // robot was set to ready by go_connected; mirror shows it
+    else { this.setJoystick(false); this.disconnectRobot(); if (!V.traj) showReady(); }  // enter Simulator -> ready
+    this.setTheme(connected);
+  },
+
+  setTheme(connected){
+    document.body.classList.toggle('reachy-connected', !!connected);
+    if (!V.scene) return;
+    V.scene.background = new THREE.Color(connected ? 0x2a1606 : 0x12182a);
+    if (V.grid) V.scene.remove(V.grid);
+    V.grid = new THREE.GridHelper(1.0, 20,
+      connected ? 0x7c2d12 : 0x2c3a57, connected ? 0x431407 : 0x1c2740);
+    V.scene.add(V.grid);
+  },
+
+  getCurrentPose(){ const p = currentPose(); return p ? JSON.stringify(p) : ""; },
+
+  applyPose(payload){
+    if (typeof payload === 'string'){ if (!payload) return; payload = JSON.parse(payload.split('|')[0]); }
+    if (!payload || !V.ready) return;
+    updateJoints(payload);                       // show it in 3D
+    if (V.robot) V.robot.updateMatrixWorld(true);
+    // if joysticking, retarget the FPS state so control eases to the recalled pose
+    if (V.joy.on && V.joy.fps && payload.head_pose){
+      const m = payload.head_pose, e = mat16euler(m), j = V.joy.fps, G = 180/Math.PI;
+      j.base = payload.body_yaw*G; j.neck = e[2] - j.base; j.pitch = e[1];
+      j.z = m[11]*1000; j.antL = payload.antennas_position[0]*G; j.antR = payload.antennas_position[1]*G;
+    }
+  },
+
   setJoystick(on){
     if (on){
       if (V.joy.on) return;
-      const s = V.liveBuf[V.liveBuf.length-1], R = Math.PI/180;
-      V.joy.tgt = s
-        ? { x:s.x/1000, y:s.y/1000, z:s.z/1000, roll:s.roll*R, pitch:s.pitch*R, yaw:s.yaw*R,
-            aL:s.antL*R, aR:s.antR*R, by:s.body*R }
-        : { x:0,y:0,z:0,roll:0,pitch:0,yaw:0,aL:0,aR:0,by:0 };
-      const host = location.hostname || '127.0.0.1';
-      try { V.joy.ws = new WebSocket(`ws://${host}:8000/api/move/ws/set_target`); }
-      catch(e){ setStatus('🎮 joystick connection failed', '#d9534f'); return; }
-      V.joy.on = true; V.joy.warned = false; V.joy.t = 0;
-      setStatus('🎮 Joystick — L stick move · R stick look · bumpers turn · triggers height', '#4cae4c');
-      V.joy.raf = requestAnimationFrame(joyLoop);
+      V.joy.on = true; V.joy.warned = false;
+      if (V.live){
+        // connected: stream targets to the real robot; control immediately from neutral
+        const host = location.hostname || '127.0.0.1';
+        try { V.joy.ws = new WebSocket(`ws://${host}:8000/api/move/ws/set_target`); }
+        catch(e){ setStatus('🎮 joystick connection failed', '#d9534f'); V.joy.on = false; return; }
+        startControl();
+      } else {
+        startControl();   // simulator: snap to the ready pose, then free-control (3a)
+      }
+      setStatus(JOY_MSG, '#4cae4c');
     } else {
-      V.joy.on = false;
-      if (V.joy.raf) cancelAnimationFrame(V.joy.raf);
+      V.joy.on = false; V.joy.phase = null;
+      if (V.joy.timer) clearInterval(V.joy.timer);
+      V.joy.timer = 0;
       if (V.joy.ws){ try { V.joy.ws.close(); } catch(e){} V.joy.ws = null; }
+      V.joy.tgt = null; V.joy.fps = null;   // clear so each enable starts fresh
+      if (!V.live && !V.traj) showReady();   // no move loaded -> static ready (else Animate resumes it)
     }
   },
 };
@@ -513,3 +841,7 @@ CHART_HTML = """
   <div style="font-size:12px;opacity:0.6">white line = playhead · click or drag on the chart to scrub</div>
 </div>
 """
+
+GAMEPAD_HTML = """<div id="gamepad-viz" style="font-size:12px;min-height:24px">
+  <div style="opacity:.6">No gamepad detected — press a button on it.</div>
+</div>"""
