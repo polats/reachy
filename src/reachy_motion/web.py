@@ -47,7 +47,10 @@ def move_trajectory(name: str, library: str, fps: int = 40) -> dict:
     traj = m.trajectory
     kin = _kin()
 
+    from scipy.spatial.transform import Rotation as R
+
     head_flat, head_joints, antennas, body = [], [], [], []
+    ch = {k: [] for k in ("roll", "pitch", "yaw", "x", "y", "z", "antL", "antR", "body")}
     last_q = [0.0] * 7
     for i in idx:
         H = np.asarray(traj[i]["head"], dtype=np.float64)
@@ -60,14 +63,21 @@ def move_trajectory(name: str, library: str, fps: int = 40) -> dict:
         last_q = q
         head_joints.append(q)
         head_flat.append([float(x) for x in H.flatten()])
-        antennas.append([float(traj[i]["antennas"][0]), float(traj[i]["antennas"][1])])
+        aL, aR = float(traj[i]["antennas"][0]), float(traj[i]["antennas"][1])
+        antennas.append([aL, aR])
         body.append(by)
+        roll, pitch, yaw = R.from_matrix(H[:3, :3]).as_euler("xyz", degrees=True)
+        ch["roll"].append(float(roll)); ch["pitch"].append(float(pitch)); ch["yaw"].append(float(yaw))
+        ch["x"].append(float(H[0, 3] * 1000)); ch["y"].append(float(H[1, 3] * 1000)); ch["z"].append(float(H[2, 3] * 1000))
+        ch["antL"].append(float(np.rad2deg(aL))); ch["antR"].append(float(np.rad2deg(aR)))
+        ch["body"].append(float(np.rad2deg(by)))
     return {
         "time": [float(x) for x in grid],
         "head": head_flat,
         "head_joints": head_joints,
         "antennas": antennas,
         "body_yaw": body,
+        "channels": ch,
     }
 
 
@@ -91,7 +101,43 @@ const PASSIVE_JOINT_NAMES = [];
 for (let i=1;i<=7;i++) PASSIVE_JOINT_NAMES.push(`passive_${i}_x`,`passive_${i}_y`,`passive_${i}_z`);
 
 const V = { ready:false, traj:null, t:0, dur:0, playing:true, robot:null, jointMap:{},
-            calcPassive:null, buildHeadPose:null, audio:null, live:false, ws:null };
+            calcPassive:null, buildHeadPose:null, audio:null, live:false, ws:null,
+            liveBuf:[], liveWindow:8, liveLast:0,
+            joy:{ on:false, ws:null, raf:0, last:0, t:0, warned:false, tgt:null } };
+
+// gamepad teleop tuning (ranges/speeds mirror the desktop app)
+const JOY = { dead:0.12, posSpeed:0.06, rotSpeed:0.9, zSpeed:0.04, bodySpeed:0.9, antSpeed:2.5,
+  lim:{ pos:0.05, z:0.05, pitch:0.8, yaw:1.2, roll:0.5, body:1.0, ant:2.79 } };
+const _clamp = (v,a) => Math.max(-a, Math.min(a, v));
+const _dz = v => Math.abs(v) < JOY.dead ? 0 : v;
+
+function joyLoop(){
+  if (!V.joy.on) return;
+  V.joy.raf = requestAnimationFrame(joyLoop);
+  const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+  let gp = null; for (const p of pads){ if (p){ gp = p; break; } }
+  const now = performance.now()/1000; const dt = Math.min(0.05, now-(V.joy.t||now)); V.joy.t = now;
+  if (!gp){ if (!V.joy.warned){ setStatus('🎮 no gamepad — connect one and press a button', '#d9a441'); V.joy.warned=true; } return; }
+  if (V.joy.warned){ V.joy.warned=false; setStatus('🎮 Joystick — L stick move · R stick look · bumpers turn · triggers height', '#4cae4c'); }
+  const ax = gp.axes, bt = gp.buttons, tg = V.joy.tgt, L = JOY.lim;
+  const lx=_dz(ax[0]||0), ly=_dz(ax[1]||0), rx=_dz(ax[2]||0), ry=_dz(ax[3]||0);
+  tg.x     = _clamp(tg.x     + (-ly)*JOY.posSpeed*dt, L.pos);
+  tg.y     = _clamp(tg.y     + ( lx)*JOY.posSpeed*dt, L.pos);
+  tg.pitch = _clamp(tg.pitch + (-ry)*JOY.rotSpeed*dt, L.pitch);
+  tg.yaw   = _clamp(tg.yaw   + ( rx)*JOY.rotSpeed*dt, L.yaw);
+  const lb=(bt[4]&&bt[4].value)||0, rb=(bt[5]&&bt[5].value)||0;   // bumpers -> body yaw
+  tg.by    = _clamp(tg.by + (rb-lb)*JOY.bodySpeed*dt, L.body);
+  const lt=(bt[6]&&bt[6].value)||0, rt=(bt[7]&&bt[7].value)||0;   // triggers -> height (z)
+  tg.z     = _clamp(tg.z + (rt-lt)*JOY.zSpeed*dt, L.z);
+  const aUp=(bt[3]&&bt[3].pressed)?1:0, aDn=(bt[0]&&bt[0].pressed)?1:0;  // Y/A -> antennas
+  const ad=(aUp-aDn)*JOY.antSpeed*dt; tg.aL=_clamp(tg.aL+ad,L.ant); tg.aR=_clamp(tg.aR+ad,L.ant);
+  if (now - V.joy.last > 0.04 && V.joy.ws && V.joy.ws.readyState === 1){
+    V.joy.last = now;
+    V.joy.ws.send(JSON.stringify({
+      target_head_pose:{x:tg.x,y:tg.y,z:tg.z,roll:tg.roll,pitch:tg.pitch,yaw:tg.yaw},
+      target_antennas:[tg.aL,tg.aR], target_body_yaw:tg.by }));
+  }
+}
 
 function parseUrdfColors(urdfText){
   const doc = new DOMParser().parseFromString(urdfText, 'application/xml');
@@ -108,6 +154,113 @@ function parseUrdfColors(urdfText){
     }
   });
   return map;
+}
+
+// ---- channels chart (SVG) with live playhead + click/drag scrub ----
+const CH_PANELS = [
+  { label:'head °',   keys:[['roll','#fbbf24'],['pitch','#60a5fa'],['yaw','#f472b6']] },
+  { label:'head mm',  keys:[['x','#fbbf24'],['y','#34d399'],['z','#60a5fa']] },
+  { label:'°',        keys:[['antL','#34d399'],['antR','#a78bfa'],['body','#fb923c']] },
+];
+
+function buildChart(traj){
+  const el = document.getElementById('reachy-chart');
+  if (!el || !traj || !traj.channels) return;
+  const w = el.clientWidth || 360, h = 330;
+  const L=34, Rm=8, T=8, B=16, gap=12;
+  const x0=L, x1=w-Rm, dur=traj.time[traj.time.length-1] || 1;
+  const ph=(h-T-B-2*gap)/3;
+  const tx = t => x0 + (t/dur)*(x1-x0);
+  let svg = `<svg width="100%" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" style="display:block">`;
+  CH_PANELS.forEach((p, pi) => {
+    const yTop = T + pi*(ph+gap);
+    let lo=1e9, hi=-1e9;
+    p.keys.forEach(([k]) => traj.channels[k].forEach(v => { if(v<lo)lo=v; if(v>hi)hi=v; }));
+    if (hi-lo < 1e-6){ hi+=1; lo-=1; }
+    const pad=(hi-lo)*0.1; lo-=pad; hi+=pad;
+    const vy = v => yTop + ph - (v-lo)/(hi-lo)*ph;
+    svg += `<rect x="${x0}" y="${yTop}" width="${x1-x0}" height="${ph}" fill="rgba(255,255,255,0.03)"/>`;
+    svg += `<line x1="${x0}" y1="${vy(0)}" x2="${x1}" y2="${vy(0)}" stroke="rgba(255,255,255,0.12)"/>`;
+    svg += `<text x="2" y="${yTop+9}" fill="rgba(255,255,255,0.5)" font-size="9">${p.label}</text>`;
+    p.keys.forEach(([k,c]) => {
+      const pts = traj.channels[k].map((v,i)=>`${tx(traj.time[i]).toFixed(1)},${vy(v).toFixed(1)}`).join(' ');
+      svg += `<polyline points="${pts}" fill="none" stroke="${c}" stroke-width="1.3"/>`;
+    });
+  });
+  svg += `<line id="reachy-ph" x1="${x0}" y1="${T}" x2="${x0}" y2="${h-B}" stroke="#fff" stroke-width="1.2" opacity="0.85"/>`;
+  svg += `</svg>`;
+  el.innerHTML = svg;
+  V.chart = { x0, x1, dur, el };
+}
+
+function updatePlayhead(){
+  if (!V.chart) return;
+  const ph = document.getElementById('reachy-ph');
+  if (!ph) return;
+  const x = V.chart.x0 + (Math.min(V.t, V.chart.dur)/V.chart.dur)*(V.chart.x1-V.chart.x0);
+  ph.setAttribute('x1', x); ph.setAttribute('x2', x);
+}
+
+// ---- live channels (rolling scope) while connected to the robot ----
+function mat16euler(m){            // intrinsic xyz (matches scipy as_euler('xyz'))
+  const s = Math.max(-1, Math.min(1, m[2]));
+  const d = 180/Math.PI;
+  return [Math.atan2(-m[6], m[10])*d, Math.asin(s)*d, Math.atan2(-m[1], m[0])*d];
+}
+
+function pushLiveSample(data){
+  if (!data) return;
+  const now = performance.now()/1000;
+  let m = null; const hp = data.head_pose;
+  if (Array.isArray(hp) && hp.length===16) m = hp; else if (hp && hp.m) m = hp.m;
+  let roll=0,pitch=0,yaw=0,x=0,y=0,z=0;
+  if (m){ [roll,pitch,yaw] = mat16euler(m); x=m[3]*1000; y=m[7]*1000; z=m[11]*1000; }
+  const ant = data.antennas_position || [0,0], D = 180/Math.PI;
+  V.liveBuf.push({ t:now, roll, pitch, yaw, x, y, z,
+                   antL:ant[0]*D, antR:ant[1]*D, body:(data.body_yaw||0)*D });
+  while (V.liveBuf.length && V.liveBuf[0].t < now - V.liveWindow) V.liveBuf.shift();
+  if (now - V.liveLast > 0.06){ V.liveLast = now; buildLiveChart(); }  // ~16 Hz redraw
+}
+
+function buildLiveChart(){
+  const el = document.getElementById('reachy-chart');
+  if (!el || V.liveBuf.length < 2) return;
+  const w = el.clientWidth || 360, h = 330, L=34, Rm=8, T=8, B=16, gap=12;
+  const x0=L, x1=w-Rm, ph=(h-T-B-2*gap)/3;
+  const now = performance.now()/1000, win = V.liveWindow, t0 = now - win, buf = V.liveBuf;
+  const tx = t => x0 + ((t-t0)/win)*(x1-x0);
+  let svg = `<svg width="100%" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" style="display:block">`;
+  CH_PANELS.forEach((p, pi) => {
+    const yTop = T + pi*(ph+gap);
+    let lo=1e9, hi=-1e9;
+    p.keys.forEach(([k]) => buf.forEach(s => { if(s[k]<lo)lo=s[k]; if(s[k]>hi)hi=s[k]; }));
+    if (hi-lo < 1e-6){ hi+=1; lo-=1; }
+    const pad=(hi-lo)*0.1; lo-=pad; hi+=pad;
+    const vy = v => yTop + ph - (v-lo)/(hi-lo)*ph;
+    svg += `<rect x="${x0}" y="${yTop}" width="${x1-x0}" height="${ph}" fill="rgba(255,255,255,0.03)"/>`;
+    svg += `<line x1="${x0}" y1="${vy(0)}" x2="${x1}" y2="${vy(0)}" stroke="rgba(255,255,255,0.12)"/>`;
+    svg += `<text x="2" y="${yTop+9}" fill="rgba(255,255,255,0.5)" font-size="9">${p.label}</text>`;
+    p.keys.forEach(([k,c]) => {
+      const pts = buf.map(s => `${tx(s.t).toFixed(1)},${vy(s[k]).toFixed(1)}`).join(' ');
+      svg += `<polyline points="${pts}" fill="none" stroke="${c}" stroke-width="1.3"/>`;
+    });
+  });
+  svg += `<line x1="${x1}" y1="${T}" x2="${x1}" y2="${h-B}" stroke="#fff" stroke-width="1" opacity="0.5"/>`;
+  svg += `</svg>`;
+  el.innerHTML = svg;
+}
+
+function chartScrub(clientX){
+  if (V.live || !V.chart || !V.traj) return;
+  const r = V.chart.el.getBoundingClientRect();
+  const px = (clientX - r.left) / r.width * (V.chart.el.clientWidth || r.width);
+  let t = (px - V.chart.x0)/(V.chart.x1 - V.chart.x0) * V.chart.dur;
+  t = Math.max(0, Math.min(V.chart.dur, t));
+  V.t = t; V.playing = false; V.scrubbing = true;
+  if (V.audio && V.audio.src){ V.audio.pause(); V.audio.currentTime = t; }
+  const sl = document.getElementById('reachy-time'); if (sl) sl.value = (t/V.chart.dur*1000)|0;
+  const pb = document.getElementById('reachy-play'); if (pb) pb.textContent = '▶ Play';
+  if (V.ready && V.traj && !V.live) applyFrame();   // immediately reflect the scrubbed pose
 }
 
 // their updateJoints(): drive the full Stewart platform + passive joints + antennas
@@ -139,6 +292,7 @@ function applyFrame(){
                  body_yaw: tr.body_yaw[k], antennas_position: tr.antennas[k] });
   const sl = document.getElementById('reachy-time');
   if (sl && !V.scrubbing) sl.value = (V.t / V.dur * 1000) | 0;
+  updatePlayhead();
 }
 
 window.ReachyViewer = {
@@ -247,12 +401,28 @@ window.ReachyViewer = {
     if (pb) pb.addEventListener('click', () => { V.playing=!V.playing;
       if (V.audio && V.audio.src){ if(V.playing) V.audio.play().catch(()=>{}); else V.audio.pause(); }
       pb.textContent = V.playing ? '⏸ Pause' : '▶ Play'; });
+
+    // channels chart: click/drag to scrub the timeline
+    const chartEl = document.getElementById('reachy-chart');
+    if (chartEl){
+      let dragging = false;
+      chartEl.style.cursor = 'col-resize';
+      chartEl.addEventListener('pointerdown', e => { dragging = true; chartScrub(e.clientX);
+        try { chartEl.setPointerCapture(e.pointerId); } catch(_){} });
+      chartEl.addEventListener('pointermove', e => { if (dragging) chartScrub(e.clientX); });
+      const end = () => { dragging = false; V.scrubbing = false; };
+      chartEl.addEventListener('pointerup', end);
+      chartEl.addEventListener('pointercancel', end);
+      window.addEventListener('resize', () => { if (V.traj) buildChart(V.traj); });
+    }
+    if (V.traj) buildChart(V.traj);
   },
 
   playMove(traj){
     if (typeof traj === 'string'){ if (!traj) return; traj = JSON.parse(traj); }
     if (!traj || !traj.time) return;
     V.traj = traj; V.dur = traj.time[traj.time.length-1]; V.t = 0; V.playing = true;
+    if (!V.live) buildChart(traj);   // while live, the rolling scope owns the chart
     if (V.audio){
       if (traj.audio){ V.audio.src = traj.audio; V.audio.currentTime = 0; V.audio.play().catch(()=>{}); }
       else { V.audio.removeAttribute('src'); V.audio.load(); }
@@ -269,18 +439,41 @@ window.ReachyViewer = {
     let ws;
     try { ws = new WebSocket(url); } catch(e){ setStatus('connect failed', '#d9534f'); return; }
     V.ws = ws;
-    ws.onopen = () => { V.live = true; setStatus('● live — mirroring robot', '#4cae4c');
+    ws.onopen = () => { V.live = true; V.liveBuf = []; V.liveLast = 0;
+      setStatus('● live — mirroring robot', '#4cae4c');
       const b=document.getElementById('reachy-connect'); if(b) b.textContent='Disconnect robot';
       if (V.audio) V.audio.pause(); };
     ws.onmessage = (ev) => { if (!V.ready) return;
-      try { updateJoints(JSON.parse(ev.data)); } catch(e){} };
+      try { const d = JSON.parse(ev.data); updateJoints(d); pushLiveSample(d); } catch(e){} };
     ws.onerror = () => setStatus('connection error (is the daemon running on :8000?)', '#d9534f');
     ws.onclose = () => { V.live = false; V.ws = null;
       const b=document.getElementById('reachy-connect'); if(b) b.textContent='Connect robot';
       setStatus('disconnected', '#888'); };
   },
-  disconnectRobot(){ if (V.ws){ V.ws.close(); V.ws = null; } V.live = false; },
-  toggleRobot(){ if (V.live || V.ws) this.disconnectRobot(); else this.connectRobot(); },
+  disconnectRobot(){ if (V.ws){ V.ws.close(); V.ws = null; } V.live = false;
+    V.liveBuf = []; if (V.traj) buildChart(V.traj); },  // restore recorded chart
+  toggleRobot(){ if (V.live || V.ws){ this.setJoystick(false); this.disconnectRobot(); } else this.connectRobot(); },
+
+  setJoystick(on){
+    if (on){
+      if (V.joy.on) return;
+      const s = V.liveBuf[V.liveBuf.length-1], R = Math.PI/180;
+      V.joy.tgt = s
+        ? { x:s.x/1000, y:s.y/1000, z:s.z/1000, roll:s.roll*R, pitch:s.pitch*R, yaw:s.yaw*R,
+            aL:s.antL*R, aR:s.antR*R, by:s.body*R }
+        : { x:0,y:0,z:0,roll:0,pitch:0,yaw:0,aL:0,aR:0,by:0 };
+      const host = location.hostname || '127.0.0.1';
+      try { V.joy.ws = new WebSocket(`ws://${host}:8000/api/move/ws/set_target`); }
+      catch(e){ setStatus('🎮 joystick connection failed', '#d9534f'); return; }
+      V.joy.on = true; V.joy.warned = false; V.joy.t = 0;
+      setStatus('🎮 Joystick — L stick move · R stick look · bumpers turn · triggers height', '#4cae4c');
+      V.joy.raf = requestAnimationFrame(joyLoop);
+    } else {
+      V.joy.on = false;
+      if (V.joy.raf) cancelAnimationFrame(V.joy.raf);
+      if (V.joy.ws){ try { V.joy.ws.close(); } catch(e){} V.joy.ws = null; }
+    }
+  },
 };
 
 function setStatus(text, color){
@@ -310,5 +503,13 @@ CONTAINER_HTML = """
   </div>
   <div style="font-size:12px;opacity:0.7">drag to orbit · scroll to zoom · scrub the timeline · Connect (top-left) mirrors the live USB robot</div>
   <audio id="reachy-audio" loop preload="auto" style="display:none"></audio>
+</div>
+"""
+
+CHART_HTML = """
+<div style="display:flex;flex-direction:column;gap:4px">
+  <div style="font-size:13px;font-weight:600;opacity:0.85">Channels (head pose · antennas · body)</div>
+  <div id="reachy-chart" style="width:100%;height:330px"></div>
+  <div style="font-size:12px;opacity:0.6">white line = playhead · click or drag on the chart to scrub</div>
 </div>
 """

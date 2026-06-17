@@ -50,8 +50,11 @@ System note (Linux): `reachy-mini` needs PyGObject, which compiles against
 
 Browse a moves library as an **interactive 3D robot** — orbit, zoom, scrub the timeline —
 driven directly from each move's recorded head 4×4 + antenna + body-yaw data, alongside
-its description and per-DOF channel plots. The dataset inspector for curating and (later)
-generating moves.
+its description and a **channels chart** (head pose · antennas · body). Off-robot, the chart
+shows the selected move with a **playhead** that tracks playback and **click/drag-to-scrub**.
+While **connected**, it switches to a **rolling live scope** of the robot's actual values
+(updating in real time as it moves or you hand-guide it). The dataset inspector for curating
+and (later) generating moves.
 
 ```bash
 uv run python app.py            # http://127.0.0.1:7861  (GRADIO_SERVER_PORT to override)
@@ -87,6 +90,15 @@ While hand-guiding, the live mirror shows the robot following your hand. Disconn
 normal hold (`enable_motors`). **Compliant** needs the daemon on Placo
 (`uv add "reachy-mini[placo-kinematics]"` + system `liburdfdom-dev`, then
 `reachy-mini-daemon --kinematics-engine Placo`); free hand-guide works on any daemon.
+
+**🎮 Joystick control (gamepad)** — drive the robot with a connected gamepad (browser
+Gamepad API). Mapping: **left stick** = head translate (x/y), **right stick** = look
+(pitch/yaw), **bumpers** = body turn, **triggers** = height (z), **A/Y** = antennas. It
+integrates stick input into a target pose (clamped to safe ranges) and streams a
+`FullBodyTarget` to the daemon's `/api/move/ws/set_target` WebSocket at ~25 Hz; the live
+mirror + chart show the robot following. Mutually exclusive with hand-guide/compliant (it
+switches the robot to normal hold so targets are accepted). Sign/axis conventions follow the
+desktop app and may need flipping for your pad in `JOY`/`joyLoop` (`src/reachy_motion/web.py`).
 
 > Earlier approaches and why they were dropped: reconstructing a single GLB from the MJCF
 > meshes (`src/reachy_motion/glb.py`, now unused) looked splotchy — GLTF's default material

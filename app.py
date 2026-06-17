@@ -16,14 +16,10 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
 
 import gradio as gr  # noqa: E402
-import matplotlib  # noqa: E402
-
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt  # noqa: E402
 
 from reachy_motion import dataset as ds  # noqa: E402
 from reachy_motion.robot_control import RobotController  # noqa: E402
-from reachy_motion.web import CONTAINER_HTML, HEAD_HTML, move_trajectory  # noqa: E402
+from reachy_motion.web import CHART_HTML, CONTAINER_HTML, HEAD_HTML, move_trajectory  # noqa: E402
 
 LIBRARY = ds.DEFAULT_LIBRARY
 controller = RobotController()
@@ -34,30 +30,6 @@ WEB_ASSETS = WEB_ROOT / "assets"
 URDF_URL = f"/gradio_api/file={(WEB_ASSETS / 'reachy-mini.urdf').resolve()}"
 MESH_BASE = f"/gradio_api/file={(WEB_ASSETS / 'meshes_optimized').resolve()}/"
 KIN_URL = f"/gradio_api/file={(WEB_ROOT / 'src' / 'Kinematics.js').resolve()}"
-
-
-def _plot(name: str):
-    ch = ds.channels(name, LIBRARY)
-    t = ch["t"]
-    fig, axes = plt.subplots(3, 1, figsize=(6, 5.2), sharex=True)
-    axes[0].plot(t, ch["head_roll"], label="roll")
-    axes[0].plot(t, ch["head_pitch"], label="pitch")
-    axes[0].plot(t, ch["head_yaw"], label="yaw")
-    axes[0].set_ylabel("head °")
-    axes[1].plot(t, ch["head_x"], label="x")
-    axes[1].plot(t, ch["head_y"], label="y")
-    axes[1].plot(t, ch["head_z"], label="z")
-    axes[1].set_ylabel("head mm")
-    axes[2].plot(t, ch["antenna_left"], label="ant L")
-    axes[2].plot(t, ch["antenna_right"], label="ant R")
-    axes[2].plot(t, ch["body_yaw"], label="body", linestyle="--")
-    axes[2].set_ylabel("° ")
-    axes[2].set_xlabel("time (s)")
-    for ax in axes:
-        ax.legend(loc="upper right", fontsize=7, ncol=3)
-        ax.grid(alpha=0.3)
-    fig.tight_layout()
-    return fig
 
 
 def _info_md(name: str) -> str:
@@ -71,19 +43,19 @@ def _info_md(name: str) -> str:
 
 def select_move(name: str, connected: bool):
     if not name:
-        return "", "", None
-    info, plot = _info_md(name), _plot(name)
+        return "", ""
+    data = move_trajectory(name, LIBRARY)  # includes channels for the chart
+    info = _info_md(name)
     if connected:
         # play the move on the physical robot (motion + sound); the viewer mirrors the
-        # robot's live state, so no recorded trajectory is pushed.
+        # live robot, so don't push browser audio (robot plays the sound). Chart still drawn.
         move = ds.get_library(LIBRARY).get(name)
         controller.play(move, move.sound_path)
-        return "", info, plot
-    data = move_trajectory(name, LIBRARY)
+        return json.dumps(data), info
     wav = ds.get_library(LIBRARY).get(name).sound_path
     if wav is not None and Path(wav).exists():
         data["audio"] = f"/gradio_api/file={Path(wav).resolve()}"
-    return json.dumps(data), info, plot
+    return json.dumps(data), info
 
 
 _CONNECTED_MSG = "🟢 **Connected** — selecting a move plays it on the robot"
@@ -91,46 +63,53 @@ _CONNECTED_MSG = "🟢 **Connected** — selecting a move plays it on the robot"
 
 def toggle_connect(connected: bool):
     """Single toggle: connect if disconnected, disconnect if connected."""
-    off = (gr.update(value=False),)  # reset both guide checkboxes
+    reset = (gr.update(value=False), gr.update(value=False), gr.update(value=False))  # hg, comp, joy
     if connected:
         controller.disconnect()
-        return (False, "not connected", gr.update(value="Connect robot", variant="primary"),
-                gr.update(value=False), gr.update(value=False))
+        return (False, "not connected", gr.update(value="Connect robot", variant="primary"), *reset)
     try:
         controller.connect()
-        return (True, _CONNECTED_MSG, gr.update(value="Disconnect robot", variant="secondary"),
-                gr.update(value=False), gr.update(value=False))
+        return (True, _CONNECTED_MSG, gr.update(value="Disconnect robot", variant="secondary"), *reset)
     except Exception as e:  # noqa: BLE001
         return (False, f"🔴 Connect failed — is `reachy-mini-daemon` running on :8000?\n\n`{e}`",
-                gr.update(value="Connect robot", variant="primary"),
-                gr.update(value=False), gr.update(value=False))
+                gr.update(value="Connect robot", variant="primary"), *reset)
 
 
 _FREE_MSG = "🖐️ **Hand-guide · free** — easiest to move by hand; the viewer mirrors."
 _COMPLIANT_MSG = "🖐️ **Hand-guide · compliant** — firmer, holds position. Move it by hand; the viewer mirrors."
 _PLACO_HINT = "⚠️ **Compliant** needs the daemon on `--kinematics-engine Placo`."
+_JOY_MSG = "🎮 **Joystick** — L stick move · R stick look · bumpers turn · triggers height."
+JS_SETJOY = "(j) => window.ReachyViewer.setJoystick(!!j)"
 
 
 def _apply(hand_guide: bool, compliant: bool):
+    # changing hand-guide/compliant also stops joystick teleop
     ok = controller.set_mode(hand_guide, compliant)
     msg = _CONNECTED_MSG if not hand_guide else (_COMPLIANT_MSG if compliant else _FREE_MSG)
     if not ok and compliant:
         msg = _PLACO_HINT
-    return msg, gr.update(value=hand_guide), gr.update(value=compliant)
+    return msg, gr.update(value=hand_guide), gr.update(value=compliant), gr.update(value=False)
 
 
 def on_hand_guide(hand_guide: bool, compliant: bool, connected: bool):
     if not connected:
-        return "Connect to the robot first.", gr.update(value=False), gr.update(value=False)
-    # turning hand-guide off clears compliant and returns to normal hold
+        return "Connect to the robot first.", *([gr.update(value=False)] * 3)
     return _apply(hand_guide, compliant and hand_guide)
 
 
 def on_compliant(hand_guide: bool, compliant: bool, connected: bool):
     if not connected:
-        return "Connect to the robot first.", gr.update(value=False), gr.update(value=False)
-    # compliant implies hand-guide; unchecking it falls back to free if still hand-guiding
+        return "Connect to the robot first.", *([gr.update(value=False)] * 3)
     return _apply(hand_guide or compliant, compliant)
+
+
+def on_joystick(joystick: bool, connected: bool):
+    if not connected:
+        return "Connect to the robot first.", gr.update(value=False), gr.update(value=False), gr.update(value=False)
+    if joystick:
+        controller.set_mode(False, False)  # normal hold so set_target is accepted
+        return _JOY_MSG, gr.update(value=False), gr.update(value=False), gr.update(value=True)
+    return _CONNECTED_MSG, gr.update(), gr.update(), gr.update(value=False)
 
 
 def build() -> gr.Blocks:
@@ -153,31 +132,36 @@ def build() -> gr.Blocks:
                 connect_btn = gr.Button("Connect robot", variant="primary")
                 hand_guide_chk = gr.Checkbox(label="Hand-guide (move by hand)", value=False)
                 compliant_chk = gr.Checkbox(label=" ↳ Compliant (firmer; holds position)", value=False)
+                joystick_chk = gr.Checkbox(label="🎮 Joystick control (gamepad)", value=False)
                 status = gr.Markdown("not connected")
                 picker = gr.Dropdown(choices=names, value=names[0], label="Move", filterable=True)
                 info = gr.Markdown()
             with gr.Column(scale=2):
                 gr.HTML(CONTAINER_HTML)
             with gr.Column(scale=2):
-                plot = gr.Plot(label="Channels (head pose · antennas · body)")
+                gr.HTML(CHART_HTML)
 
         # single toggle: backend SDK client (to command the robot) + browser mirror WS
         connect_btn.click(
             toggle_connect, inputs=connected,
-            outputs=[connected, status, connect_btn, hand_guide_chk, compliant_chk],
+            outputs=[connected, status, connect_btn, hand_guide_chk, compliant_chk, joystick_chk],
         ).then(None, None, None, js="() => window.ReachyViewer.toggleRobot()")
-        # hand-guide / compliant (compliant implies hand-guide)
-        guide_io = dict(inputs=[hand_guide_chk, compliant_chk, connected],
-                        outputs=[status, hand_guide_chk, compliant_chk])
-        hand_guide_chk.change(on_hand_guide, **guide_io)
-        compliant_chk.change(on_compliant, **guide_io)
+        # hand-guide / compliant / joystick are mutually exclusive control modes; each
+        # handler also syncs the browser joystick to the joystick checkbox value.
+        guide_out = [status, hand_guide_chk, compliant_chk, joystick_chk]
+        hand_guide_chk.change(on_hand_guide, [hand_guide_chk, compliant_chk, connected], guide_out
+            ).then(None, joystick_chk, None, js=JS_SETJOY)
+        compliant_chk.change(on_compliant, [hand_guide_chk, compliant_chk, connected], guide_out
+            ).then(None, joystick_chk, None, js=JS_SETJOY)
+        joystick_chk.change(on_joystick, [joystick_chk, connected], guide_out
+            ).then(None, joystick_chk, None, js=JS_SETJOY)
 
         # push trajectory to the three.js viewer whenever it changes
         traj.change(None, inputs=traj, outputs=None, js="(t) => window.ReachyViewer.playMove(t)")
-        picker.change(select_move, inputs=[picker, connected], outputs=[traj, info, plot])
+        picker.change(select_move, inputs=[picker, connected], outputs=[traj, info])
 
         # the viewer self-initializes (poller in HEAD_HTML); just load the first move
-        demo.load(select_move, inputs=[picker, connected], outputs=[traj, info, plot])
+        demo.load(select_move, inputs=[picker, connected], outputs=[traj, info])
     return demo
 
 
