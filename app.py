@@ -21,6 +21,7 @@ from reachy_motion import dataset as ds  # noqa: E402
 from reachy_motion import poses  # noqa: E402
 from reachy_motion.robot_control import RobotController  # noqa: E402
 from reachy_motion.web import (  # noqa: E402
+    CAMERA_HTML,
     CHART_HTML,
     CONTAINER_HTML,
     GAMEPAD_HTML,
@@ -42,6 +43,7 @@ MESH_BASE = f"/gradio_api/file={(WEB_ASSETS / 'meshes_optimized').resolve()}/"
 KIN_URL = f"/gradio_api/file={(WEB_ROOT / 'src' / 'Kinematics.js').resolve()}"
 IK_WASM_URL = f"/gradio_api/file={(WEB_ROOT / 'kin' / 'reachy_mini_rust_kinematics.js').resolve()}"
 IK_DATA_URL = f"/gradio_api/file={(WEB_ROOT / 'kin' / 'kinematics_data.json').resolve()}"
+GSTWEBRTC_URL = f"/gradio_api/file={(WEB_ROOT / 'gstwebrtc-api.js').resolve()}"
 
 
 def _info_md(name: str) -> str:
@@ -181,7 +183,8 @@ def build() -> gr.Blocks:
         f"window.REACHY_IK_WASM_URL='{IK_WASM_URL}';"
         f"window.REACHY_IK_DATA_URL='{IK_DATA_URL}';"
         f"window.REACHY_DEFAULT_POSE={_default_pose_json()};"
-        f"window.REACHY_READY={json.dumps(ready_render())};</script>\n" + HEAD_HTML
+        f"window.REACHY_READY={json.dumps(ready_render())};</script>\n"
+        f'<script src="{GSTWEBRTC_URL}"></script>\n' + HEAD_HTML  # robot camera (WebRTC consumer)
     )
     css = """
 /* dark-orange theme when controlling the real robot */
@@ -198,9 +201,10 @@ body.reachy-connected h1 { color:#fb923c !important; }
             f"driven directly from each move's recorded head/antenna/body data."
         )
         traj = gr.Textbox(visible=False)  # carries trajectory JSON to the JS viewer
-        pose_capture = gr.Textbox(visible=False)  # input slot; value supplied by getCurrentPose() js
-        pose_apply = gr.Textbox(visible=False)  # backend -> JS applyPose (value passed to .change js)
-        default_json = gr.Textbox(visible=False)  # backend -> JS window.REACHY_DEFAULT_POSE
+        # --- pose UI hidden carriers disabled for now (kept for reuse) ---
+        # pose_capture = gr.Textbox(visible=False)  # input slot; value supplied by getCurrentPose() js
+        # pose_apply = gr.Textbox(visible=False)  # backend -> JS applyPose (value passed to .change js)
+        # default_json = gr.Textbox(visible=False)  # backend -> JS window.REACHY_DEFAULT_POSE
         connected = gr.State(False)
         with gr.Row():
             with gr.Column(scale=1):
@@ -216,26 +220,30 @@ body.reachy-connected h1 { color:#fb923c !important; }
                     with gr.Tab("🎮 Control") as control_tab:
                         gr.Markdown("Connect a gamepad — **L stick** look (pan/tilt) · "
                                     "**R stick** turn body + height · **L2/L1·R2/R1** antennas · "
-                                    "**L3** ready pose · **R3** save pose. FPS-style (head turns "
-                                    "relative to the body); movement is bounded to the robot's "
-                                    "reachable range so it never goes out of the workspace.")
+                                    "**L3** ready pose. FPS-style (head turns relative to the body); "
+                                    "movement is bounded to the robot's reachable range so it never "
+                                    "goes out of the workspace.")
                         gr.HTML(GAMEPAD_HTML)
                     with gr.Tab("🎬 Animate") as animate_tab:
                         picker = gr.Dropdown(choices=names, value=None, label="Move",
                                              filterable=True, elem_id="move-pick")
                         info = gr.Markdown()
-                with gr.Accordion("Poses", open=True):
-                    with gr.Row():
-                        pose_dd = gr.Dropdown(choices=poses.list_poses(), value=None,
-                                              label="Go to pose", filterable=True, scale=4)
-                        del_btn = gr.Button("🗑", scale=1, min_width=44)
-                    pose_save_btn = gr.Button("💾 Save current pose  ·  or Space / R3",
-                                              elem_id="pose_save_btn", size="sm")
-                    l3_dd = gr.Dropdown(choices=poses.list_poses(), value=poses.get_default(),
-                                        label="L3 reset pose", filterable=True)
+                # --- Poses UI disabled for now (kept for reuse) ---
+                # with gr.Accordion("Poses", open=True):
+                #     with gr.Row():
+                #         pose_dd = gr.Dropdown(choices=poses.list_poses(), value=None,
+                #                               label="Go to pose", filterable=True, scale=4)
+                #         del_btn = gr.Button("🗑", scale=1, min_width=44)
+                #     pose_save_btn = gr.Button("💾 Save current pose  ·  or Space / R3",
+                #                               elem_id="pose_save_btn", size="sm")
+                #     l3_dd = gr.Dropdown(choices=poses.list_poses(), value=poses.get_default(),
+                #                         label="L3 reset pose", filterable=True)
             with gr.Column(scale=2):
                 gr.HTML(CONTAINER_HTML)
             with gr.Column(scale=2):
+                # camera (robot's live WebRTC feed); collapse to turn it off, expand to start
+                with gr.Accordion("📷 Camera", open=False):
+                    gr.HTML(CAMERA_HTML)
                 gr.HTML(CHART_HTML)
 
         # mode tabs: Simulator (off-robot) <-> Connected (live robot + dark-orange theme)
@@ -252,16 +260,16 @@ body.reachy-connected h1 { color:#fb923c !important; }
         hand_guide_chk.change(on_hand_guide, [hand_guide_chk, compliant_chk, connected], guide_out)
         compliant_chk.change(on_compliant, [hand_guide_chk, compliant_chk, connected], guide_out)
 
-        # poses: save (button click, or Space/R3 which JS-clicks it; getCurrentPose() supplies value)
-        pose_save_btn.click(on_save_pose, inputs=pose_capture, outputs=[pose_dd, l3_dd],
-                            js="() => window.ReachyViewer.getCurrentPose()")
-        pose_dd.change(on_select_pose, inputs=[pose_dd, connected], outputs=pose_apply)
-        pose_apply.change(None, inputs=pose_apply, outputs=None,
-                          js="(p) => window.ReachyViewer.applyPose(p)")
-        del_btn.click(on_delete_pose, inputs=pose_dd, outputs=[pose_dd, l3_dd])
-        l3_dd.change(on_set_l3, inputs=l3_dd, outputs=default_json)
-        default_json.change(None, inputs=default_json, outputs=None,
-                            js="(d) => { window.REACHY_DEFAULT_POSE = (d && d.length) ? JSON.parse(d) : null; }")
+        # --- pose wiring disabled for now (kept for reuse) ---
+        # pose_save_btn.click(on_save_pose, inputs=pose_capture, outputs=[pose_dd, l3_dd],
+        #                     js="() => window.ReachyViewer.getCurrentPose()")
+        # pose_dd.change(on_select_pose, inputs=[pose_dd, connected], outputs=pose_apply)
+        # pose_apply.change(None, inputs=pose_apply, outputs=None,
+        #                   js="(p) => window.ReachyViewer.applyPose(p)")
+        # del_btn.click(on_delete_pose, inputs=pose_dd, outputs=[pose_dd, l3_dd])
+        # l3_dd.change(on_set_l3, inputs=l3_dd, outputs=default_json)
+        # default_json.change(None, inputs=default_json, outputs=None,
+        #                     js="(d) => { window.REACHY_DEFAULT_POSE = (d && d.length) ? JSON.parse(d) : null; }")
 
         # push trajectory to the three.js viewer whenever it changes
         traj.change(None, inputs=traj, outputs=None, js="(t) => window.ReachyViewer.playMove(t)")

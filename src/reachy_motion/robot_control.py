@@ -34,6 +34,13 @@ class RobotController:
         with self._lock:
             if self._mini is None:
                 self._mini = ReachyMini(media_backend="no_media")
+                # no_media makes the daemon RELEASE its camera/mic (shutting down the
+                # WebRTC media server the browser consumes). Re-acquire it so the daemon
+                # keeps streaming the camera while we drive control over /ws/sdk.
+                try:
+                    self._mini.acquire_media()
+                except Exception as e:  # noqa: BLE001
+                    print(f"[robot_control] acquire_media error: {e}")
 
     def disconnect(self) -> None:
         with self._lock:

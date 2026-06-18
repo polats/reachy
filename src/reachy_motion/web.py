@@ -147,6 +147,7 @@ for (let i=1;i<=7;i++) PASSIVE_JOINT_NAMES.push(`passive_${i}_x`,`passive_${i}_y
 
 const V = { ready:false, traj:null, t:0, dur:0, playing:true, robot:null, jointMap:{},
             calcPassive:null, buildHeadPose:null, ik:null, audio:null, live:false, ws:null,
+            audioCtx:null, waveUrl:null, waveW:0, cam:null,
             liveBuf:[], liveWindow:8, liveLast:0,
             joy:{ on:false, ws:null, timer:0, warned:false, tgt:null, phase:null, fps:null,
                   prevL3:false, prevR3:false } };
@@ -216,7 +217,7 @@ function readyPayload(){
   return window.REACHY_READY ||
     { head_pose: SIM_INIT16, head_joints: SIM_INIT_JOINTS, antennas_position:[-0.1745,0.1745], body_yaw:0 };
 }
-const JOY_MSG = '🎮 Joystick — L stick look · R stick turn + height · L2/R2 antennas · L3 ready · R3 save';
+const JOY_MSG = '🎮 Joystick — L stick look · R stick turn + height · L2/R2 antennas · L3 ready';
 
 // head pose -> row-major 4x4 (matches the SDK's create_head_pose: intrinsic xyz euler + translation)
 function poseMatrix(tg){
@@ -324,13 +325,14 @@ function joyTick(){
   const ax = gp.axes, bt = gp.buttons;
   const v = (b) => (bt[b] && (bt[b].value || (bt[b].pressed ? 1 : 0))) || 0;
 
-  // L3 -> reset to the L3/ready pose ; R3 -> save current pose
+  // L3 -> reset to the ready pose
   const l3 = !!(bt[10] && bt[10].pressed);
   if (l3 && !V.joy.prevL3){ const D = window.REACHY_DEFAULT_POSE; if (D) fpsFromPose(j, D); else fpsReadyTargets(j); }
   V.joy.prevL3 = l3;
-  const r3 = !!(bt[11] && bt[11].pressed);
-  if (r3 && !V.joy.prevR3) captureAndSave();
-  V.joy.prevR3 = r3;
+  // R3 -> save pose: disabled for now (pose UI is off; kept for reuse)
+  // const r3 = !!(bt[11] && bt[11].pressed);
+  // if (r3 && !V.joy.prevR3) captureAndSave();
+  // V.joy.prevR3 = r3;
 
   // integrate (ebubar/teleop mapping): L stick = neck pan/tilt, R stick = body yaw + height,
   // L2/L1 + R2/R1 = antennas. State accumulates in degrees/mm.
@@ -502,6 +504,102 @@ function chartScrub(clientX){
   if (V.ready && V.traj && !V.live) applyFrame();   // immediately reflect the scrubbed pose
 }
 
+// ---- voice waveform (decoded via Web Audio) + scrub ----
+async function buildWaveform(url){
+  const el = document.getElementById('reachy-wave'); if (!el) return;
+  if (!url){ el.innerHTML = '<div style="opacity:.45;font-size:12px;padding:24px 0">no sound for this move</div>'; V.waveUrl = null; V.waveW = 0; return; }
+  if (url === V.waveUrl) return;
+  V.waveUrl = url;
+  el.innerHTML = '<div style="opacity:.45;font-size:12px;padding:24px 0">loading waveform…</div>';
+  try {
+    if (!V.audioCtx) V.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const buf = await V.audioCtx.decodeAudioData(await (await fetch(url)).arrayBuffer());
+    if (url !== V.waveUrl) return;   // a newer move was selected while decoding
+    const data = buf.getChannelData(0);
+    const w = el.clientWidth || 360, h = 70, N = Math.min(w, 600), step = Math.max(1, Math.floor(data.length/N)), mid = h/2;
+    let bars = '';
+    for (let i=0;i<N;i++){
+      let mx = 0; for (let j=0;j<step;j++){ const v = Math.abs(data[i*step+j]||0); if (v>mx) mx = v; }
+      const x = (i/N)*w, bh = Math.max(1, mx*h*0.9);
+      bars += `<rect x="${x.toFixed(1)}" y="${(mid-bh/2).toFixed(1)}" width="${(w/N*0.8).toFixed(2)}" height="${bh.toFixed(1)}" fill="#60a5fa" opacity="0.7"/>`;
+    }
+    el.innerHTML = `<svg width="100%" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" style="display:block;cursor:col-resize">
+      <rect x="0" y="0" width="${w}" height="${h}" fill="rgba(255,255,255,0.03)"/>${bars}
+      <line id="reachy-wave-ph" x1="0" y1="0" x2="0" y2="${h}" stroke="#fff" stroke-width="1.2" opacity="0.85"/></svg>`;
+    V.waveW = w;
+  } catch(e){ console.error('waveform decode failed', e); el.innerHTML = '<div style="opacity:.45;font-size:12px;padding:24px 0">waveform unavailable</div>'; V.waveW = 0; }
+}
+function updateWavePlayhead(){
+  const ph = document.getElementById('reachy-wave-ph');
+  if (!ph || !V.waveW || !V.dur) return;
+  const x = Math.min(V.t, V.dur)/V.dur * V.waveW;
+  ph.setAttribute('x1', x); ph.setAttribute('x2', x);
+}
+function waveScrub(clientX){
+  if (V.live || !V.waveW || !V.dur) return;
+  const el = document.getElementById('reachy-wave'); const r = el.getBoundingClientRect();
+  let t = (clientX - r.left)/r.width * V.dur;
+  t = Math.max(0, Math.min(V.dur, t));
+  V.t = t; V.playing = false; V.scrubbing = true;
+  if (V.audio && V.audio.src){ V.audio.pause(); V.audio.currentTime = t; }
+  const sl = document.getElementById('reachy-time'); if (sl) sl.value = (t/V.dur*1000)|0;
+  const pb = document.getElementById('reachy-play'); if (pb) pb.textContent = '▶ Play';
+  if (V.ready && V.traj && !V.live) applyFrame();
+}
+
+// ---- robot camera: consume the daemon's WebRTC stream into the <video> ----
+// The daemon publishes a producer ('reachy_mini') on its GStreamer signaling server (:8443).
+// gstwebrtc-api (loaded in <head>) connects, finds the producer, and gives us a MediaStream.
+function camStatus(m){ const e = document.getElementById('reachy-cam-status'); if (e) e.textContent = m; }
+function startCamera(){
+  if (V.cam) return;                                   // already running
+  if (!window.GstWebRTCAPI){ camStatus('camera library not loaded'); return; }
+  const host = location.hostname || 'localhost';
+  camStatus('connecting…');
+  const cam = { api:null, session:null, prodL:null };
+  V.cam = cam;
+  try {
+    cam.api = new window.GstWebRTCAPI({
+      signalingServerUrl: `ws://${host}:8443`,
+      reconnectionTimeout: 2000,
+      meta: { name: 'reachy-motion-viewer' },
+      webrtcConfig: { iceServers: [{ urls:'stun:stun.l.google.com:19302' }] },
+    });
+    const onProducer = (producer) => {
+      if (V.cam !== cam || cam.session) return;          // one session; ignore if torn down
+      const session = cam.api.createConsumerSession(producer.id);
+      if (!session){ camStatus('no consumer session'); return; }
+      cam.session = session;
+      session.addEventListener('streamsChanged', () => {
+        const s = session.streams;
+        if (s && s.length){ const v = document.getElementById('reachy-cam');
+          if (v){ v.srcObject = s[0]; v.play().catch(()=>{}); } camStatus(''); }
+      });
+      session.addEventListener('error', () => camStatus('stream error'));
+      session.addEventListener('closed', () => { if (cam.session === session) cam.session = null; });
+      session.connect();
+    };
+    cam.prodL = { producerAdded: onProducer, producerRemoved: () => {} };
+    cam.api.registerPeerListener(cam.prodL);   // fires producerAdded for existing + new producers
+    try { (cam.api.getAvailableProducers() || []).forEach(onProducer); } catch(_){}  // backup for already-listed
+  } catch(e){ console.error('camera', e); camStatus('camera unavailable'); V.cam = null; }
+}
+function stopCamera(){
+  const cam = V.cam; if (!cam) return; V.cam = null;
+  try { if (cam.session) cam.session.close(); } catch(_){}
+  try { if (cam.api && cam.prodL) cam.api.unregisterPeerListener(cam.prodL); } catch(_){}
+  try { if (cam.api && cam.api._channel) cam.api._channel.close(); } catch(_){}   // close signaling ws
+  const v = document.getElementById('reachy-cam'); if (v) v.srcObject = null;
+  camStatus('camera off — expand to start');
+}
+function camTick(){
+  const v = document.getElementById('reachy-cam');
+  const open = !!(v && v.offsetParent !== null);        // accordion expanded -> content visible
+  if (V.live && open){ if (!V.cam) startCamera(); }
+  else if (V.cam){ stopCamera(); }
+  else if (open && !V.live){ camStatus('connect to the robot (Connected tab) to start the camera'); }
+}
+
 // ---- poses: capture the current pose and push it to the gradio backend ----
 function currentPose(){
   if (V.joy.on && V.joy.tgt){
@@ -554,6 +652,7 @@ function applyFrame(){
   const sl = document.getElementById('reachy-time');
   if (sl && !V.scrubbing) sl.value = (V.t / V.dur * 1000) | 0;
   updatePlayhead();
+  updateWavePlayhead();
 }
 
 window.ReachyViewer = {
@@ -701,15 +800,31 @@ window.ReachyViewer = {
     }
     if (V.traj) buildChart(V.traj);
 
-    // spacebar -> save the current pose
-    document.addEventListener('keydown', (e) => {
-      if (e.code === 'Space' && !/^(INPUT|TEXTAREA|SELECT)$/.test((e.target && e.target.tagName) || '')){
-        e.preventDefault(); captureAndSave();
-      }
-    });
+    // voice: volume slider + waveform click/drag to scrub
+    const vol = document.getElementById('reachy-vol');
+    if (vol && V.audio){ V.audio.volume = vol.value/100;
+      vol.addEventListener('input', () => { if (V.audio) V.audio.volume = vol.value/100; }); }
+    const waveEl = document.getElementById('reachy-wave');
+    if (waveEl){
+      let wd = false;
+      waveEl.addEventListener('pointerdown', e => { wd = true; waveScrub(e.clientX);
+        try { waveEl.setPointerCapture(e.pointerId); } catch(_){} });
+      waveEl.addEventListener('pointermove', e => { if (wd) waveScrub(e.clientX); });
+      const wend = () => { wd = false; V.scrubbing = false; };
+      waveEl.addEventListener('pointerup', wend);
+      waveEl.addEventListener('pointercancel', wend);
+    }
+
+    // spacebar -> save pose: disabled for now (pose UI is off; kept for reuse)
+    // document.addEventListener('keydown', (e) => {
+    //   if (e.code === 'Space' && !/^(INPUT|TEXTAREA|SELECT)$/.test((e.target && e.target.tagName) || '')){
+    //     e.preventDefault(); captureAndSave();
+    //   }
+    // });
 
     gamepadViz();    // start the live gamepad tester (self-schedules)
     autoControl();   // auto-enable control when a gamepad is on the Control sub-tab
+    setInterval(camTick, 700);   // start/stop the robot camera with the Camera accordion + connection
   },
 
   playMove(traj){
@@ -721,6 +836,7 @@ window.ReachyViewer = {
       if (traj.audio){ V.audio.src = traj.audio; V.audio.currentTime = 0; V.audio.play().catch(()=>{}); }
       else { V.audio.removeAttribute('src'); V.audio.load(); }
     }
+    buildWaveform(traj.audio || null);   // show the sound's waveform beneath the channels
     const pb = document.getElementById('reachy-play'); if (pb) pb.textContent = '⏸ Pause';
   },
 
@@ -834,11 +950,29 @@ CONTAINER_HTML = """
 </div>
 """
 
+CAMERA_HTML = """
+<div style="display:flex;flex-direction:column;gap:4px">
+  <video id="reachy-cam" autoplay playsinline muted
+         style="width:100%;border-radius:6px;background:#000;aspect-ratio:16/9;object-fit:contain"></video>
+  <div id="reachy-cam-status" style="font-size:12px;opacity:0.6">connect to the robot, then expand to start the camera</div>
+</div>
+"""
+
 CHART_HTML = """
 <div style="display:flex;flex-direction:column;gap:4px">
   <div style="font-size:13px;font-weight:600;opacity:0.85">Channels (head pose · antennas · body)</div>
   <div id="reachy-chart" style="width:100%;height:330px"></div>
   <div style="font-size:12px;opacity:0.6">white line = playhead · click or drag on the chart to scrub</div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+    <div style="font-size:13px;font-weight:600;opacity:0.85">Voice</div>
+    <div style="display:flex;align-items:center;gap:6px;font-size:12px;opacity:0.75">
+      🔊 <input id="reachy-vol" type="range" min="0" max="100" value="80" style="width:96px" title="volume">
+    </div>
+  </div>
+  <div id="reachy-wave" style="width:100%;height:70px">
+    <div style="opacity:.45;font-size:12px;padding:24px 0">select a move to see its sound</div>
+  </div>
+  <div style="font-size:12px;opacity:0.6">waveform of the move's sound · click or drag to scrub the voice</div>
 </div>
 """
 
