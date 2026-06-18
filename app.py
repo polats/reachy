@@ -18,6 +18,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
 import gradio as gr  # noqa: E402
 
 from reachy_motion import dataset as ds  # noqa: E402
+from reachy_motion import daemon_control  # noqa: E402
 from reachy_motion import poses  # noqa: E402
 from reachy_motion.robot_control import RobotController  # noqa: E402
 from reachy_motion.web import (  # noqa: E402
@@ -87,10 +88,30 @@ def go_connected():
     off = (gr.update(value=False), gr.update(value=False))  # hg, comp
     try:
         controller.connect()
-        controller.goto_ready()  # start from the canonical ready pose
+        controller.goto_ready_async()  # ease to ready in the background; don't block the UI
         return (True, _CONNECTED_MSG2, *off)
     except Exception as e:  # noqa: BLE001
         return (False, f"🔴 Connect failed — is `reachy-mini-daemon` running on :8000?\n\n`{e}`", *off)
+
+
+def _daemon_status_md() -> str:
+    return ("🟢 **Daemon online** (`:8000`)" if daemon_control.is_up()
+            else "🔴 **Daemon offline** — click Restart")
+
+
+def on_restart_daemon(connected: bool):
+    """Restart the daemon (Placo + camera GST_PLUGIN_PATH); reconnect if we were connected."""
+    controller.disconnect()  # drop the now-stale client
+    ok = daemon_control.restart()
+    if not ok:
+        return "🔴 **Daemon failed to start** — check `/tmp/reachy-daemon.log`"
+    if connected:
+        try:
+            controller.connect()
+            controller.goto_ready()
+        except Exception:  # noqa: BLE001
+            pass
+    return "🟢 **Daemon restarted** (`:8000`)"
 
 
 def on_enter_activity(connected: bool):
@@ -213,6 +234,10 @@ body.reachy-connected h1 { color:#fb923c !important; }
                         gr.Markdown("Off-robot preview.")
                     with gr.Tab("🔌 Connected") as conn_tab:
                         gr.Markdown("Live robot.")
+                        with gr.Row():
+                            daemon_md = gr.Markdown(_daemon_status_md())
+                            daemon_restart_btn = gr.Button("🔄 Restart daemon", scale=0, size="sm")
+                        daemon_timer = gr.Timer(8.0)  # live daemon health
                         hand_guide_chk = gr.Checkbox(label="Hand-guide (move by hand)", value=False)
                         compliant_chk = gr.Checkbox(label=" ↳ Compliant (firmer; holds position)", value=False)
                 status = gr.Markdown("not connected")
@@ -252,6 +277,9 @@ body.reachy-connected h1 { color:#fb923c !important; }
             None, None, None, js="() => window.ReachyViewer.setMode(false)")
         conn_tab.select(go_connected, None, mode_out).then(
             None, None, None, js="() => window.ReachyViewer.setMode(true)")
+        # daemon health: live status + one-click restart (relaunches with Placo + camera plugins)
+        daemon_timer.tick(lambda: _daemon_status_md(), None, daemon_md, show_progress="hidden")
+        daemon_restart_btn.click(on_restart_daemon, connected, daemon_md)
         # activity tabs: entering Control/Animate while connected enables motors (clears hand-guide)
         control_tab.select(on_enter_activity, connected, [hand_guide_chk, compliant_chk])
         animate_tab.select(on_enter_activity, connected, [hand_guide_chk, compliant_chk])

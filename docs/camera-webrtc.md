@@ -120,6 +120,46 @@ camera/mic, which shuts down the media server and `:8443`. `RobotController.conn
 calls `acquire_media()` right after connecting to bring the camera back. (Restarting the daemon
 while the Gradio app holds a connection will also drop it — restart the app after the daemon.)
 
+## Camera modes / lens
+
+The Reachy Mini Lite has **one physical lens** — a single wide-angle camera (the two
+`/dev/video*` nodes are the same device's capture + metadata, not two lenses). It is distorted
+in hardware and undistorted in software via the intrinsics (`K`) and distortion (`D`) the daemon
+publishes at `GET /api/camera/specs`.
+
+There are **four resolution modes**. Each has a different `crop_factor`, so picking a mode is the
+closest thing to "changing the lens" (it changes the field of view / zoom):
+
+| Mode | Resolution | FPS | crop_factor | View |
+|------|-----------|-----|-------------|------|
+| **default** | 1920×1080 | 60 | 1.115 | narrowest |
+| | 3840×2592 | 30 | **1.0** | **widest** (full sensor) |
+| | 3840×2160 | 30 | 1.109 | |
+| | 3264×2448 | 30 | 1.115 | |
+
+**There is no supported way to switch modes at runtime.** Checked all three surfaces:
+
+- **Daemon API** — `/api/camera/specs` is read-only; there is no `set-resolution` endpoint.
+- **Env var / config** — `media_server` hardcodes `self._resolution = camera_specs.default_resolution`;
+  nothing reads an override.
+- **CLI** — `reachy-mini-daemon` has no camera/resolution flag (only `--no-media`).
+
+The WebRTC pipeline is therefore locked to **1920×1080@60 (crop 1.115, the narrowest view)** when the
+media server starts.
+
+### What changing it would take
+
+The resolution is baked into the GStreamer pipeline at build time, so switching means rebuilding the
+pipeline (restart the daemon's media) with a different mode. Practical path, **not implemented**:
+
+1. Patch the SDK's `media_server` to read the resolution from an override (e.g. env var
+   `REACHY_CAM_RESOLUTION`) instead of always `default_resolution` — another `.venv` patch, as
+   fragile as the audio one above.
+2. Add a mode dropdown in the Camera panel that sets the override and restarts the daemon media.
+
+Trade-offs: each switch costs a media restart (a few seconds, brief feed drop), and the wider 4K
+modes run at 30 fps and use much more WebRTC bandwidth than the default 1080p@60.
+
 ## Troubleshooting
 
 | Symptom | Cause / check |

@@ -28,19 +28,28 @@ class RobotController:
         return self._mini is not None
 
     def connect(self) -> None:
-        """Connect an SDK client to the running daemon (raises if unavailable)."""
+        """Connect an SDK client to the running daemon (raises if unavailable).
+
+        Only the SDK handshake (needed before any control command) blocks; the camera
+        media re-acquire runs in the background so switching to Connected stays snappy.
+        """
         from reachy_mini import ReachyMini
 
         with self._lock:
             if self._mini is None:
                 self._mini = ReachyMini(media_backend="no_media")
-                # no_media makes the daemon RELEASE its camera/mic (shutting down the
-                # WebRTC media server the browser consumes). Re-acquire it so the daemon
-                # keeps streaming the camera while we drive control over /ws/sdk.
-                try:
-                    self._mini.acquire_media()
-                except Exception as e:  # noqa: BLE001
-                    print(f"[robot_control] acquire_media error: {e}")
+        # no_media makes the daemon RELEASE its camera/mic (shutting down the WebRTC media
+        # server the browser consumes). Re-acquire it so the daemon keeps streaming the
+        # camera — but in the background (it's ~1s and only the camera needs it, not control).
+        mini = self._mini
+
+        def _reacquire():
+            try:
+                mini.acquire_media()
+            except Exception as e:  # noqa: BLE001
+                print(f"[robot_control] acquire_media error: {e}")
+
+        threading.Thread(target=_reacquire, daemon=True).start()
 
     def disconnect(self) -> None:
         with self._lock:
@@ -113,26 +122,35 @@ class RobotController:
                 return False
 
     def goto_ready(self, duration: float = 1.0) -> bool:
-        """Move the robot to the canonical ready pose (SDK INIT head + ±10° antennas)."""
+        """Move the robot to the canonical ready pose (SDK INIT head + ±10° antennas).
+
+        The blocking move runs WITHOUT holding the controller lock, so toggling
+        hand-guide/compliant stays responsive while the robot eases to ready.
+        """
         import numpy as np
         from reachy_mini.utils import create_head_pose
 
         with self._lock:
-            if self._mini is None:
-                return False
-            try:
-                self._mini.cancel_move()
-            except Exception:
-                pass
-            try:
-                self._mini.enable_motors()
-                self._mini.goto_target(head=create_head_pose(),
-                                       antennas=np.array([-0.1745, 0.1745]),
-                                       body_yaw=0.0, duration=duration)
-                return True
-            except Exception as e:  # noqa: BLE001
-                print(f"[robot_control] goto_ready error: {e}")
-                return False
+            mini = self._mini
+        if mini is None:
+            return False
+        try:
+            mini.cancel_move()
+        except Exception:
+            pass
+        try:
+            mini.enable_motors()
+            mini.goto_target(head=create_head_pose(),
+                             antennas=np.array([-0.1745, 0.1745]),
+                             body_yaw=0.0, duration=duration)
+            return True
+        except Exception as e:  # noqa: BLE001
+            print(f"[robot_control] goto_ready error: {e}")
+            return False
+
+    def goto_ready_async(self, duration: float = 1.0) -> None:
+        """Fire-and-forget goto_ready so the UI doesn't block on the move."""
+        threading.Thread(target=self.goto_ready, args=(duration,), daemon=True).start()
 
     def play(self, move, wav: Optional[str | Path] = None) -> None:
         """Play a move on the robot now (motion + optional sound). Non-blocking.
