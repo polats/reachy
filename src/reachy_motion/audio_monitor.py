@@ -11,7 +11,9 @@ which is speech-specific; the RMS level is kept only for the visual waveform amp
 
 from __future__ import annotations
 
+import ctypes
 import re
+import signal
 import subprocess
 import threading
 from collections import deque
@@ -19,6 +21,15 @@ from pathlib import Path
 
 import numpy as np
 import onnxruntime as ort
+
+
+def _die_with_parent():
+    """preexec: have the child (arecord) get SIGKILL if this process dies, so a hard kill /
+    restart never leaves a zombie holding the mic (which would block the next capture)."""
+    try:
+        ctypes.CDLL("libc.so.6", use_errno=True).prctl(1, signal.SIGKILL)  # PR_SET_PDEATHSIG
+    except Exception:
+        pass
 
 _CARD_NAME = "Reachy Mini Audio"
 _RATE = 16000
@@ -55,6 +66,7 @@ class AudioMonitor:
         self._levels = deque([0.0] * _HISTORY, maxlen=_HISTORY)
         self._running = False
         self._active = False
+        self._muted = False   # half-duplex: ignore input while the robot is speaking (TTS)
         self._sess: ort.InferenceSession | None = None
         self._state = np.zeros((2, 1, 128), dtype=np.float32)
         self._ctx = np.zeros((1, _CONTEXT), dtype=np.float32)  # rolling 64-sample context
@@ -112,6 +124,7 @@ class AudioMonitor:
                     ["arecord", "-D", f"plughw:{idx},0", "-f", "S16_LE",
                      "-r", str(_RATE), "-c", "1", "-t", "raw", "-"],
                     stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                    preexec_fn=_die_with_parent,
                 )
             except Exception:
                 self._proc = None
@@ -131,6 +144,10 @@ class AudioMonitor:
             f32 = np.frombuffer(buf, dtype=np.int16).astype(np.float32) / 32768.0
             rms = float(np.sqrt(np.mean(f32 * f32)))
             self._levels.append(min(1.0, rms * _GAIN))        # waveform amplitude
+            if self._muted:                                     # robot is speaking -> ignore input
+                self._active = False
+                since = _HANGOVER
+                continue
             prob = self._vad_prob(f32)                          # speech probability
             since = 0 if prob >= _VAD_ON else since + 1
             self._active = since < _HANGOVER
@@ -152,6 +169,14 @@ class AudioMonitor:
                 self._utt, self._utt_len = [], 0
             self._prev_active = self._active
 
+    def mute(self, on: bool) -> None:
+        """Half-duplex: when muted, drop the in-progress utterance and ignore input (TTS playback)."""
+        self._muted = bool(on)
+        if on:
+            with self._utt_lock:
+                self._utt, self._utt_len = [], 0
+                self._prev_active = False
+
     def partial_audio(self) -> np.ndarray | None:
         """Audio of the in-progress utterance (for streaming partials), or None if not speaking."""
         with self._utt_lock:
@@ -166,6 +191,7 @@ class AudioMonitor:
         with self._lock:
             self._running = False
             self._active = False
+            self._muted = False
             if self._proc is not None:
                 try:
                     self._proc.terminate()

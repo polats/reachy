@@ -33,6 +33,7 @@ class StreamingTranscriber:
         self._committed: deque[str] = deque(maxlen=_HISTORY)
         self._interim = ""
         self._ready = False
+        self.on_final = None   # optional callback(text) when a user utterance finalizes (the responder seam)
 
     @property
     def running(self) -> bool:
@@ -81,6 +82,11 @@ class StreamingTranscriber:
                         if text:
                             self._committed.append(text)
                         self._interim = ""
+                    if text and self.on_final:        # hand the utterance to the responder/TTS loop
+                        try:
+                            self.on_final(text)
+                        except Exception as e:  # noqa: BLE001
+                            print(f"[transcribe] on_final error: {e}")
                 else:
                     with self._lock:
                         self._interim = ""

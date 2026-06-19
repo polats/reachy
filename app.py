@@ -19,10 +19,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
 import gradio as gr  # noqa: E402
 
 from reachy_motion import audio_monitor  # noqa: E402
+from reachy_motion import conversation as convo  # noqa: E402
 from reachy_motion import dataset as ds  # noqa: E402
 from reachy_motion import daemon_control  # noqa: E402
 from reachy_motion import poses  # noqa: E402
 from reachy_motion import transcribe  # noqa: E402
+from reachy_motion import tts  # noqa: E402
 from reachy_motion.robot_control import RobotController  # noqa: E402
 from reachy_motion.web import (  # noqa: E402
     AUDIO_HTML,
@@ -49,6 +51,7 @@ KIN_URL = f"/gradio_api/file={(WEB_ROOT / 'src' / 'Kinematics.js').resolve()}"
 IK_WASM_URL = f"/gradio_api/file={(WEB_ROOT / 'kin' / 'reachy_mini_rust_kinematics.js').resolve()}"
 IK_DATA_URL = f"/gradio_api/file={(WEB_ROOT / 'kin' / 'kinematics_data.json').resolve()}"
 GSTWEBRTC_URL = f"/gradio_api/file={(WEB_ROOT / 'gstwebrtc-api.js').resolve()}"
+VIEWER_JS_URL = f"/gradio_api/file={(WEB_ROOT / 'viewer.js').resolve()}"  # the Three.js viewer (was inline)
 
 
 def _info_md(name: str) -> str:
@@ -84,6 +87,7 @@ _CONNECTED_MSG2 = "🔌 **Connected** — Animate plays moves on the robot · Co
 def go_simulator():
     """Simulator tab: disconnect from the robot, reset hold toggles."""
     controller.disconnect()
+    _connected[0] = False
     return (False, _SIM_MSG, gr.update(value=False), gr.update(value=False))  # connected, status, hg, comp
 
 
@@ -93,8 +97,10 @@ def go_connected():
     try:
         controller.connect()
         controller.goto_ready_async()  # ease to ready in the background; don't block the UI
+        _connected[0] = True
         return (True, _CONNECTED_MSG2, *off)
     except Exception as e:  # noqa: BLE001
+        _connected[0] = False
         return (False, f"🔴 Connect failed — is `reachy-mini-daemon` running on :8000?\n\n`{e}`", *off)
 
 
@@ -121,18 +127,35 @@ def on_restart_daemon(connected: bool):
 _audio_ctr = itertools.count()
 
 
-def audio_tick(connected: bool):
-    """Poll the mic monitor (running it only while connected); push levels to the viewer."""
-    if not connected:
-        if audio_monitor.monitor.running:
-            audio_monitor.monitor.stop()
+_connected = [False]  # set by go_connected/go_simulator (stable; not a flickery Timer input)
+_voice_on = [False]   # set by the Voice accordion via on_set_voice
+
+
+def on_set_voice(flag: str):
+    """Frontend tells us whether the Voice accordion is expanded (loop on/off)."""
+    _voice_on[0] = (str(flag) == "1")
+
+
+def audio_tick():
+    """Run the voice loop only while wanted: connected AND the Voice accordion expanded.
+
+    Reads stable module flags (not Timer inputs — a gr.State read every 0.12s flickers here).
+    """
+    active = _connected[0] and _voice_on[0]
+    if not active:
+        if convo.conversation.running:
+            convo.conversation.stop()
         if transcribe.transcriber.running:
             transcribe.transcriber.stop()
+        if audio_monitor.monitor.running:
+            audio_monitor.monitor.stop()
         return ""  # clears the indicator/waveform/transcript
     audio_monitor.monitor.start()
     transcribe.transcriber.start()
+    convo.conversation.start()
     snap = audio_monitor.monitor.snapshot()
-    snap.update(transcribe.transcriber.snapshot())  # committed, interim, stt_ready
+    snap.update(transcribe.transcriber.snapshot())   # interim, stt_ready
+    snap.update(convo.conversation.snapshot())        # dialogue, speaking
     snap["n"] = next(_audio_ctr)  # vary the value so .change always fires
     return json.dumps(snap)
 
@@ -228,7 +251,9 @@ def build() -> gr.Blocks:
         f"window.REACHY_IK_DATA_URL='{IK_DATA_URL}';"
         f"window.REACHY_DEFAULT_POSE={_default_pose_json()};"
         f"window.REACHY_READY={json.dumps(ready_render())};</script>\n"
-        f'<script src="{GSTWEBRTC_URL}"></script>\n' + HEAD_HTML  # robot camera (WebRTC consumer)
+        f'<script src="{GSTWEBRTC_URL}"></script>\n'        # robot camera (WebRTC consumer)
+        + HEAD_HTML                                          # three.js importmap (must be inline)
+        + f'\n<script type="module" src="{VIEWER_JS_URL}"></script>'  # the viewer (extracted from web.py)
     )
     css = """
 /* dark-orange theme when controlling the real robot */
@@ -237,6 +262,7 @@ body.reachy-connected .block, body.reachy-connected .form { background:#211204 !
 body.reachy-connected .tab-nav button.selected { color:#fb923c !important; border-bottom-color:#fb923c !important; }
 body.reachy-connected button.primary { background:#c2410c !important; border-color:#9a3412 !important; }
 body.reachy-connected h1 { color:#fb923c !important; }
+.reachy-hidden { display:none !important; }   /* in the DOM (JS-clickable) but not shown */
 """
     with gr.Blocks(title="Reachy Mini — Move Dataset Viewer", head=head, css=css) as demo:
         gr.Markdown(
@@ -292,9 +318,16 @@ body.reachy-connected h1 { color:#fb923c !important; }
                 # camera (robot's live WebRTC feed); collapse to turn it off, expand to start
                 with gr.Accordion("📷 Camera", open=False):
                     gr.HTML(CAMERA_HTML)
-                gr.HTML(AUDIO_HTML)   # robot mic: voice-detected indicator + live waveform
-                audio_json = gr.Textbox(visible=False)  # backend mic levels -> JS pushAudio
+                # voice loop (mic/VAD/STT + repeat/TTS): runs only while this is expanded (like camera)
+                with gr.Accordion("🎙 Voice", open=False):
+                    gr.HTML(AUDIO_HTML)
+                    voice_dd = gr.Dropdown(tts.list_voices(), value=tts.current_voice(),
+                                           label="Reachy's voice", filterable=True)
+                audio_json = gr.Textbox(visible=False)  # backend mic/dialogue snapshot -> JS pushAudio
                 audio_timer = gr.Timer(0.12)
+                voice_in = gr.Textbox(visible=False)    # carries voiceWanted() '1'/'0' to on_set_voice
+                # CSS-hidden (not visible=False) so it stays in the DOM and JS can click it
+                voice_btn = gr.Button("voice", elem_id="voice-set-btn", elem_classes=["reachy-hidden"])
                 gr.HTML(CHART_HTML)
 
         # mode tabs: Simulator (off-robot) <-> Connected (live robot + dark-orange theme)
@@ -307,7 +340,11 @@ body.reachy-connected h1 { color:#fb923c !important; }
         daemon_timer.tick(lambda: _daemon_status_md(), None, daemon_md, show_progress="hidden")
         daemon_restart_btn.click(on_restart_daemon, connected, daemon_md)
         # robot mic: poll levels while connected, render voice indicator + waveform
-        audio_timer.tick(audio_tick, connected, audio_json, show_progress="hidden")
+        audio_timer.tick(audio_tick, None, audio_json, show_progress="hidden")
+        # the JS poll clicks voice_btn on accordion-toggle; its js reports voiceWanted() -> on_set_voice
+        voice_btn.click(on_set_voice, voice_in, None,
+                        js="() => (window.ReachyViewer.voiceWanted() ? '1' : '0')")
+        voice_dd.change(lambda v: tts.set_voice(v), voice_dd, None)   # pick Reachy's TTS voice
         audio_json.change(None, audio_json, None,
                           js="(j) => window.ReachyViewer.pushAudio(j)")
         # activity tabs: entering Control/Animate while connected enables motors (clears hand-guide)

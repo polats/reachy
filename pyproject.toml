@@ -8,6 +8,7 @@ dependencies = [
     "faster-whisper>=1.2.1",
     "gradio>=6.15.1",
     "imageio[ffmpeg]>=2.37.3",
+    "kokoro-onnx>=0.5.0",
     "matplotlib>=3.11.0",
     "onnxruntime>=1.27.0",
     "reachy-mini[mujoco,placo-kinematics]>=1.8.3",

@@ -15,3 +15,5 @@ MUJOCO_LOG.TXT
 
 # user-saved poses
 poses.json
+assets/kokoro/*.onnx
+assets/kokoro/*.bin
