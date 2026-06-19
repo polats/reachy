@@ -136,7 +136,7 @@ HEAD_HTML = """
 """
 
 CONTAINER_HTML = """
-<div style="display:flex;flex-direction:column;gap:6px">
+<div id="viewer-block" style="display:flex;flex-direction:column;gap:6px">
   <div id="reachy3d" style="width:100%;height:420px;border-radius:10px;overflow:hidden;background:#12182a"></div>
   <div style="display:flex;align-items:center;gap:10px">
     <button id="reachy-play" style="padding:4px 12px;border-radius:6px;cursor:pointer">⏸ Pause</button>
@@ -169,7 +169,7 @@ CAMERA_HTML = """
 """
 
 CHART_HTML = """
-<div style="display:flex;flex-direction:column;gap:4px">
+<div id="chart-block" style="display:flex;flex-direction:column;gap:4px">
   <div style="font-size:13px;font-weight:600;opacity:0.85">Channels (head pose · antennas · body)</div>
   <div id="reachy-chart" style="width:100%;height:330px"></div>
   <div style="font-size:12px;opacity:0.6">white line = playhead · click or drag on the chart to scrub</div>
@@ -189,3 +189,60 @@ CHART_HTML = """
 GAMEPAD_HTML = """<div id="gamepad-viz" style="font-size:12px;min-height:24px">
   <div style="opacity:.6">No gamepad detected — press a button on it.</div>
 </div>"""
+
+# Phase-1 authoring: pose the robot in 3D + a keyframe timeline (driven by viewer.js, client-side).
+# A "keyframe" is a segment's target pose; the animation eases NEUTRAL -> kf1 -> kf2 -> ... .
+_POSE_SLIDER = ('<label>{label}</label>'
+                '<input class="apose" data-ch="{ch}" type="range" min="{lo}" max="{hi}" step="{step}" value="0">'
+                '<span class="aval" data-for="{ch}">0</span>')
+# yaw + pitch live on a 2D "aim pad" (like a thumbstick); the rest stay as sliders
+_POSE_SLIDERS = "".join(_POSE_SLIDER.format(label=l, ch=c, lo=lo, hi=hi, step=st) for l, c, lo, hi, st in [
+    ("Tilt (roll)", "roll", -30, 30, 1), ("Height", "z", -15, 15, 0.5),
+    ("Body", "body", -90, 90, 1), ("L ear", "antL", -180, 180, 1), ("R ear", "antR", -180, 180, 1),
+])
+_EASE_OPTS = "".join(f'<option value="{e}">{e}</option>'
+                     for e in ("smooth", "linear", "ease_out", "ease_in", "back", "anticipate", "hold"))
+# the aim pad: a draggable dot = (yaw, pitch), gamepad-thumbstick style. data-x/data-y carry the
+# channel + range so viewer.js maps the dot position <-> pose without hardcoding.
+_AIM_PAD = """
+<div style="display:flex;flex-direction:column;gap:3px;align-items:center">
+  <span style="font-size:11px;opacity:0.7">Aim (drag)</span>
+  <div id="aim-pad" data-x="yaw" data-xlo="-90" data-xhi="90" data-y="pitch" data-ylo="-25" data-yhi="20"
+       style="position:relative;width:128px;height:128px;border-radius:12px;background:rgba(255,255,255,0.05);
+              border:1px solid rgba(255,255,255,0.14);touch-action:none;cursor:grab;flex:none">
+    <div style="position:absolute;left:50%;top:0;width:1px;height:100%;background:rgba(255,255,255,0.10)"></div>
+    <div style="position:absolute;top:50%;left:0;height:1px;width:100%;background:rgba(255,255,255,0.10)"></div>
+    <div id="aim-dot" style="position:absolute;left:50%;top:50%;width:18px;height:18px;border-radius:50%;
+         background:#3b82f6;border:2px solid #fff;transform:translate(-50%,-50%);box-shadow:0 1px 4px rgba(0,0,0,.4)"></div>
+  </div>
+  <span style="font-size:10px;opacity:0.55">← turn →&nbsp;·&nbsp;↑ nod ↓</span>
+</div>
+"""
+POSE_PANEL_HTML = f"""
+<div id="author-pose" style="display:flex;flex-direction:column;gap:8px">
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+    <span style="font-size:13px;font-weight:600;opacity:0.85">Pose the keyframe</span>
+    <button id="author-posemode" type="button" style="padding:3px 10px;border-radius:6px;cursor:pointer;font-size:12px">✋ Pose</button>
+  </div>
+  <div id="author-pose-hint" style="font-size:12px;opacity:0.6">
+    Select or add a keyframe, then drag in 3D — <b>head</b> = aim, <b>antenna</b> = raise/lower,
+    <b>body</b> = twist (the grabbed part glows). Or use the pad + sliders. Toggle 🔄 Orbit to look around.</div>
+  <div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap">
+    {_AIM_PAD}
+    <div style="flex:1;min-width:190px;display:grid;grid-template-columns:auto 1fr 2.4em;gap:7px 10px;align-items:center;font-size:12px">{_POSE_SLIDERS}</div>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:12px">
+    <label>Dur</label><input id="author-dur" type="number" min="0.05" max="6" step="0.05" value="0.4" style="width:64px">s
+    <label>Ease</label><select id="author-ease" style="padding:2px">{_EASE_OPTS}</select>
+    <button id="author-addkf" type="button" style="padding:5px 12px;border-radius:6px;cursor:pointer;background:#2563eb;color:#fff;border:none;font-weight:600">＋ Keyframe</button>
+  </div>
+</div>
+"""
+
+TIMELINE_HTML = """
+<div style="display:flex;flex-direction:column;gap:4px;margin-top:6px">
+  <div style="font-size:13px;font-weight:600;opacity:0.85">Timeline — keyframes (tap to edit · ✕ to remove)</div>
+  <div id="author-timeline" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;min-height:42px;
+       padding:6px;border-radius:8px;background:rgba(255,255,255,0.03)"></div>
+</div>
+"""

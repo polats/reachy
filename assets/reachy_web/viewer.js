@@ -12,6 +12,7 @@ for (let i=1;i<=7;i++) PASSIVE_JOINT_NAMES.push(`passive_${i}_x`,`passive_${i}_y
 const V = { ready:false, traj:null, t:0, dur:0, playing:true, robot:null, jointMap:{},
             calcPassive:null, buildHeadPose:null, ik:null, audio:null, live:false, ws:null,
             audioCtx:null, waveUrl:null, waveW:0, cam:null,
+            edit:{ spec:{fps:40, segments:[], layers:[]}, sel:-1, posing:true },  // Phase-1 authoring
             liveBuf:[], liveWindow:8, liveLast:0,
             joy:{ on:false, ws:null, timer:0, warned:false, tgt:null, phase:null, fps:null,
                   prevL3:false, prevR3:false } };
@@ -31,8 +32,9 @@ const _dz = v => Math.abs(v) < JOY.dead ? 0 : v;
 const FPS = {
   hz:60, dead:0.15, axisLock:2.0, smooth:0.7,        // per-60Hz-tick constants (verbatim)
   speed:{ head:3.5, ant:5.0, z:1.0, base:2.5 },      // deg/tick (z in mm/tick)
-  // verified all-reachable envelope (81/81 corners incl. body-yaw): no detach anywhere inside it
-  lim:{ neck:30, pitch:15, zMin:-15, zMax:15, ant:60, base:90 } };
+  // verified all-reachable envelope (81/81 corners incl. body-yaw): no detach anywhere inside it.
+  // antennas are free rotational joints (not part of the Stewart IK) -> a full ±180 (360 span).
+  lim:{ neck:30, pitch:15, zMin:-15, zMax:15, ant:180, base:90 } };
 const _fdz = v => Math.abs(v) < FPS.dead ? 0 : v;
 function fpsSnap(x, y){                                // axis-lock: kill accidental diagonals
   if (Math.abs(x) < FPS.dead && Math.abs(y) < FPS.dead) return [x, y];
@@ -201,16 +203,27 @@ function joyTick(){
   // integrate (ebubar/teleop mapping): L stick = neck pan/tilt, R stick = body yaw + height,
   // L2/L1 + R2/R1 = antennas. State accumulates in degrees/mm.
   const [rx, ry] = fpsSnap(ax[0]||0, ax[1]||0);
-  j.neck  -= _fdz(rx)*FPS.speed.head;
-  j.pitch -= _fdz(ry)*FPS.speed.head;
-  j.base  -= _fdz(ax[2]||0)*FPS.speed.base;
-  j.z     -= _fdz(ax[3]||0)*FPS.speed.z;
+  const dn = _fdz(rx), dp = _fdz(ry), db = _fdz(ax[2]||0), dz = _fdz(ax[3]||0);
+  j.neck  -= dn*FPS.speed.head;
+  j.pitch -= dp*FPS.speed.head;
+  j.base  -= db*FPS.speed.base;
+  j.z     -= dz*FPS.speed.z;
   const L2 = v(6), R2 = v(7);
+  const aL1 = !!(bt[4] && bt[4].pressed), aR1 = !!(bt[5] && bt[5].pressed);
   if (L2 > 0.1) j.antL += FPS.speed.ant*L2;
-  if (bt[4] && bt[4].pressed) j.antL -= FPS.speed.ant;
+  if (aL1) j.antL -= FPS.speed.ant;
   if (R2 > 0.1) j.antR -= FPS.speed.ant*R2;
-  if (bt[5] && bt[5].pressed) j.antR += FPS.speed.ant;
+  if (aR1) j.antR += FPS.speed.ant;
 
+  // Authoring: the keyframe is the source of truth. Only fold the gamepad in while the stick is
+  // ACTIVELY moving — when idle, sync the FPS state FROM the keyframe so manual edits (pad/sliders/
+  // 3D drag, possibly beyond the joystick's envelope) aren't clobbered and the next move continues from there.
+  const active = dn || dp || db || dz || L2 > 0.1 || R2 > 0.1 || aL1 || aR1 || l3;
+  if (authoringJoy()){
+    if (active){ fpsSmoothAndPush(j, tg); joyToKeyframe(); }
+    else keyframeToJoy();
+    return;
+  }
   fpsSmoothAndPush(j, tg);
 }
 
@@ -259,6 +272,325 @@ function parseUrdfColors(urdfText){
     }
   });
   return map;
+}
+
+// ---- client-side animation bake (the JS twin of reachy_motion/anim.py) ----
+// Authored behaviors arrive as a tiny SPEC (eased pose segments + additive "life" layers),
+// not a baked trajectory. We bake them HERE — pose interpolation + the WASM IK that gamepad
+// control already uses — into the same {time,head,head_joints,antennas,body_yaw,channels}
+// structure recorded moves produce, so all the playback/chart/scrub code below is unchanged.
+// Keeping the bake on the client means edits/selections ship hundreds of bytes, not ~60KB,
+// and never run server-side IK — which is what made browsing/editing hang.
+const ANIM_CH = ['x','y','z','roll','pitch','yaw','antL','antR','body'];
+const ANIM_EASES = {
+  linear:    u => u,
+  smooth:    u => u*u*u*(u*(u*6-15)+10),
+  ease_out:  u => 1-Math.pow(1-u,3),
+  ease_in:   u => u*u*u,
+  back:      u => { const c1=1.70158, c3=c1+1; return 1 + c3*Math.pow(u-1,3) + c1*Math.pow(u-1,2); },
+  anticipate:u => { const c1=1.70158; return u*u*((c1+1)*u - c1); },
+  hold:      u => u,
+};
+const ANIM_LAYERS = {
+  breath: (p={}) => { const az=p.amp_z??2.0, ap=p.amp_pitch??1.2, per=p.period??4.0;
+    return t => { const s=Math.sin(2*Math.PI*t/per); return { z:az*s, pitch:ap*s }; }; },
+  ear_idle: (p={}) => { const a=p.amp??4.0, per=p.period??2.3;
+    return t => ({ antL:a*Math.sin(2*Math.PI*t/per), antR:a*Math.sin(2*Math.PI*t/per+0.7) }); },
+};
+function animLerp(a, b, u){ const o={}; for (const c of ANIM_CH) o[c]=a[c]+(b[c]-a[c])*u; return o; }
+function buildAnim(spec){                              // spec -> { fps, dur, sample(t) }
+  const fps = +spec.fps || 40, ch = ANIM_CH;
+  let t = 0, prev = Object.fromEntries(ch.map(c=>[c,0]));   // start at NEUTRAL
+  const segs = [];
+  for (const s of (spec.segments||[])){
+    const dur = Math.max(1e-3, +s.dur || 0.001);
+    const pose = Object.fromEntries(ch.map(c=>[c, +((s.pose||{})[c]) || 0]));
+    segs.push({ t0:t, t1:t+dur, a:prev, b:pose, ease:s.ease||'smooth' });
+    t += dur; prev = pose;
+  }
+  const layers = (spec.layers||[]).filter(l=>ANIM_LAYERS[l.type]).map(l => {
+    const { type, ...p } = l; return ANIM_LAYERS[type](p);
+  });
+  function sample(time){
+    let p = segs.length ? segs[segs.length-1].b : prev;   // past the end -> hold last pose
+    for (const s of segs){ if (time <= s.t1){
+      const u = Math.max(0, Math.min(1, (time-s.t0)/(s.t1-s.t0)));
+      p = animLerp(s.a, s.b, (ANIM_EASES[s.ease]||ANIM_EASES.smooth)(u)); break; } }
+    const d = Object.assign({}, p);
+    for (const f of layers){ const dd=f(time); for (const k in dd) d[k]=(d[k]||0)+dd[k]; }
+    return d;
+  }
+  return { fps, dur: t || 0.5, sample };
+}
+// pose (deg/mm) -> the head matrix + IK joints + antennas (radians), matching server pose_to_render
+function animFrame(p){
+  const D = Math.PI/180;
+  const tg = { x:(p.x||0)/1000, y:(p.y||0)/1000, z:(p.z||0)/1000,
+               roll:(p.roll||0)*D, pitch:(p.pitch||0)*D, yaw:(p.yaw||0)*D };
+  const by = (p.body||0)*D, M = poseMatrix(tg);
+  const st = V.ik ? _ikStewart(M, by) : null;
+  return { head_pose:M, body_yaw:by, antennas:[(p.antL||0)*D, (p.antR||0)*D],
+           joints: st ? [by, ...st] : null };
+}
+function bakeSpec(spec){                                // -> same shape as a baked recorded move
+  const anim = buildAnim(spec);
+  const n = Math.max(2, Math.round(anim.dur*anim.fps)+1);
+  const time=[], head=[], head_joints=[], antennas=[], body_yaw=[], channels={};
+  ANIM_CH.forEach(c=>channels[c]=[]);
+  let lastJoints = null;
+  for (let i=0;i<n;i++){
+    const t = i/anim.fps, p = anim.sample(t), fr = animFrame(p);
+    if (fr.joints) lastJoints = fr.joints;             // IK NaN -> carry the last valid (like the server)
+    time.push(t); head.push(fr.head_pose); body_yaw.push(fr.body_yaw); antennas.push(fr.antennas);
+    head_joints.push(fr.joints || lastJoints || [fr.body_yaw,0,0,0,0,0,0]);
+    ANIM_CH.forEach(c=>channels[c].push(+(+(p[c]||0)).toFixed(2)));
+  }
+  return { time, head, head_joints, antennas, body_yaw, channels };
+}
+
+// ===== Phase-1 authoring: pose-in-3D + keyframe timeline (the viewer owns the spec) =====
+// A keyframe IS a segment's target pose. Editing mutates V.edit.spec client-side and re-bakes
+// (~1-3ms) — no server round-trip until Save. The selected keyframe is shown by parking the
+// playhead at its time, so the normal rAF applyFrame() renders it (incl. life-layer offsets).
+// match the gamepad's reachable envelope (FPS.lim: body/base ±90, etc.); antennas spin a full 360
+const EDIT_RANGES = { pitch:[-25,20], yaw:[-90,90], roll:[-30,30], z:[-15,15], body:[-90,90], antL:[-180,180], antR:[-180,180] };
+function clampCh(ch, v){ const r = EDIT_RANGES[ch]; return r ? Math.max(r[0], Math.min(r[1], v)) : v; }
+function zerosPose(){ const p = {}; for (const c of ANIM_CH) p[c] = 0; return p; }
+function editSegs(){ return V.edit.spec.segments; }
+function selSeg(){ return V.edit.sel >= 0 ? editSegs()[V.edit.sel] : null; }
+function kfTime(i){ let t = 0, s = editSegs(); for (let k = 0; k <= i && k < s.length; k++) t += Math.max(1e-3, +s[k].dur || 0.001); return t; }
+function authorVisible(){ const ap = document.getElementById('author-pane'); return ap && !ap.classList.contains('pane-hidden'); }
+function editMode(){ return V.edit.sel >= 0 && V.edit.posing && authorVisible(); }
+
+function rebakeEdit(){                                  // spec -> baked V.traj for playback/scrub
+  const segs = editSegs();
+  if (!segs.length){ V.traj = null; showReady(); return; }
+  V.traj = bakeSpec(V.edit.spec);
+  V.dur = V.traj.time[V.traj.time.length - 1];
+  if (!V.live) buildChart(V.traj);
+}
+function parkOnSelected(){                              // pause + put the playhead on the selected kf
+  if (V.edit.sel < 0) return;
+  V.playing = false;
+  const pb = document.getElementById('reachy-play'); if (pb) pb.textContent = '▶ Play';
+  V.t = Math.min(kfTime(V.edit.sel), V.dur || 0);
+}
+function commitEdit(){ rebakeEdit(); parkOnSelected(); keyframeToJoy(); }   // re-bake, park, keep gamepad in sync
+
+// ---- gamepad <-> keyframe (authoring with a controller; see joyTick / the rAF loop) ----
+function authoringJoy(){ return V.joy && V.joy.on && V.joy.phase === 'control' && authorVisible() && V.edit.sel >= 0; }
+// fold the live joystick pose into the selected keyframe (the gamepad has no roll/x/y, so leave those)
+function joyToKeyframe(){
+  const s = selSeg(); if (!s) return;
+  const tg = V.joy.tgt, G = 180 / Math.PI;
+  s.pose.pitch = clampCh('pitch', tg.pitch * G);
+  s.pose.yaw   = clampCh('yaw',   tg.yaw * G);
+  s.pose.z     = clampCh('z',     tg.z * 1000);
+  s.pose.body  = clampCh('body',  tg.by * G);
+  s.pose.antL  = clampCh('antL',  tg.aL * G);
+  s.pose.antR  = clampCh('antR',  tg.aR * G);
+  V.traj = bakeSpec(V.edit.spec); V.dur = V.traj.time[V.traj.time.length - 1];   // light re-bake (no chart)
+  V.t = Math.min(kfTime(V.edit.sel), V.dur);
+  syncPosePanel();
+}
+// seed the FPS state from the keyframe so the rate-control joystick continues from a manual edit
+// (and so enabling the joystick doesn't snap the keyframe to the ready pose)
+function keyframeToJoy(){
+  const j = V.joy && V.joy.fps, s = selSeg(); if (!j || !s) return;
+  j.base = s.pose.body || 0; j.neck = (s.pose.yaw || 0) - j.base; j.pitch = s.pose.pitch || 0;
+  j.z = s.pose.z || 0; j.antL = s.pose.antL || 0; j.antR = s.pose.antR || 0;
+  j.cBase = j.base; j.cNeck = j.neck; j.cPitch = j.pitch; j.cZ = j.z; j.cAntL = j.antL; j.cAntR = j.antR;
+}
+
+function syncPosePanel(){
+  const s = selSeg();
+  document.querySelectorAll('#author-pose .apose').forEach(inp => {
+    const ch = inp.dataset.ch, v = s ? (s.pose[ch] || 0) : 0;
+    inp.value = v; inp.disabled = !s;
+    const lbl = document.querySelector(`#author-pose .aval[data-for="${ch}"]`); if (lbl) lbl.textContent = Math.round(v);
+  });
+  const dur = document.getElementById('author-dur'), ease = document.getElementById('author-ease');
+  if (s){ if (dur) dur.value = s.dur; if (ease) ease.value = s.ease; }
+  // aim pad: place the dot from (yaw, pitch)
+  const pad = document.getElementById('aim-pad'), dot = document.getElementById('aim-dot');
+  if (pad && dot){
+    const xlo = +pad.dataset.xlo, xhi = +pad.dataset.xhi, ylo = +pad.dataset.ylo, yhi = +pad.dataset.yhi;
+    const xv = s ? (s.pose[pad.dataset.x] || 0) : 0, yv = s ? (s.pose[pad.dataset.y] || 0) : 0;
+    dot.style.left = ((xv - xlo) / (xhi - xlo) * 100) + '%';
+    dot.style.top = ((yhi - yv) / (yhi - ylo) * 100) + '%';
+    pad.style.opacity = s ? '1' : '0.45';
+  }
+}
+function renderTimeline(){
+  const el = document.getElementById('author-timeline'); if (!el) return;
+  const segs = editSegs();
+  if (!segs.length){ el.innerHTML = '<span style="opacity:.5;font-size:12px">No keyframes yet — pose the robot, then ＋ Keyframe</span>'; return; }
+  el.innerHTML = '';
+  segs.forEach((s, i) => {
+    const chip = document.createElement('div');
+    chip.style.cssText = 'display:flex;align-items:center;gap:7px;padding:6px 10px;border-radius:8px;cursor:pointer;font-size:12px;user-select:none;' +
+      (i === V.edit.sel ? 'background:#2563eb;color:#fff' : 'background:rgba(255,255,255,0.09)');
+    chip.innerHTML = `<b>${i + 1}</b><span style="opacity:.75">${(+s.dur).toFixed(2)}s</span>` +
+                     `<span class="kf-del" data-i="${i}" style="opacity:.65;padding:0 2px;font-weight:700">✕</span>`;
+    chip.addEventListener('click', ev => {
+      if (ev.target.classList.contains('kf-del')){ ev.stopPropagation(); window.ReachyViewer.deleteKeyframe(i); return; }
+      window.ReachyViewer.selectKeyframe(i);
+    });
+    el.appendChild(chip);
+  });
+}
+function setCh(ch, v){ const s = selSeg(); if (!s) return; s.pose[ch] = clampCh(ch, v); commitEdit(); syncPosePanel(); }
+
+// ---- grab a body part in 3D and drag the WHOLE part (with a highlight) ----
+// Group every mesh by which URDF joint subtree it lives in (a mesh belongs to exactly one link, so
+// no head/body overlap): under left/right_antenna -> that antenna; under a stewart/head joint ->
+// head; everything else (torso under yaw_body, base) -> body. Each mesh caches userData.part, so
+// picking = the hit mesh's tag and highlighting = the whole group.
+function indexParts(){
+  V.parts = { head: [], antennaL: [], antennaR: [], body: [] };
+  if (!V.robot) return false;
+  V.robot.traverse(o => {
+    if (!o.isMesh) return;
+    let part = 'body', n = o;
+    while (n){
+      const nm = (n.name || '').toLowerCase();
+      if (n.isURDFJoint && nm === 'left_antenna'){ part = 'antennaL'; break; }
+      if (n.isURDFJoint && nm === 'right_antenna'){ part = 'antennaR'; break; }
+      if (n.isURDFJoint && (nm.includes('stewart') || nm.includes('head'))){ part = 'head'; break; }
+      n = n.parent;
+    }
+    o.userData.part = part;
+    V.parts[part].push(o);
+  });
+  return (V.parts.head.length + V.parts.body.length) > 0;
+}
+function clearHighlight(){ if (V._hl){ V._hl.forEach(({ m, mat }) => { m.material = mat; }); V._hl = null; } }
+function highlightPart(part){
+  clearHighlight();
+  V._hl = ((V.parts && V.parts[part]) || []).map(m => {
+    const mat = m.material, hm = mat.clone();
+    hm.emissive = new THREE.Color(0x3b82f6); hm.emissiveIntensity = 0.5; m.material = hm;
+    return { m, mat };
+  });
+}
+// the antenna's screen-space bounding rect (its world bbox projected) — covers the whole stalk,
+// which is long and thin, so a point+radius wouldn't (the joint origin sits at the base).
+function antennaScreenRect(part){
+  const meshes = (V.parts && V.parts[part]) || []; if (!meshes.length || !V.cam3d || !V.r) return null;
+  const box = new THREE.Box3(); meshes.forEach(m => box.expandByObject(m));
+  if (box.isEmpty()) return null;
+  const rect = V.r.domElement.getBoundingClientRect(), v = new THREE.Vector3();
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity, any = false;
+  for (let i = 0; i < 8; i++){
+    v.set(i & 1 ? box.max.x : box.min.x, i & 2 ? box.max.y : box.min.y, i & 4 ? box.max.z : box.min.z).project(V.cam3d);
+    if (v.z > 1) continue;
+    const x = rect.left + (v.x * 0.5 + 0.5) * rect.width, y = rect.top + (-v.y * 0.5 + 0.5) * rect.height;
+    x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x); y1 = Math.max(y1, y); any = true;
+  }
+  return any ? { x0, y0, x1, y1 } : null;
+}
+function rectDist(r, x, y){ const dx = Math.max(r.x0 - x, 0, x - r.x1), dy = Math.max(r.y0 - y, 0, y - r.y1); return Math.hypot(dx, dy); }
+// returns { part, mesh } for the pixel (part: head | body | antennaL | antennaR)
+const ANT_GRAB_PX = 18;   // margin around the antenna's screen rect, so the thin stalk is easy to grab
+function pickPart(clientX, clientY){
+  const miss = { part: 'head', mesh: null };
+  if (!V.robot || !V.cam3d || !V.r) return miss;
+  if (!V.parts || !(V.parts.head.length + V.parts.body.length)) indexParts();
+  const el = V.r.domElement, rect = el.getBoundingClientRect();
+  const ndc = new THREE.Vector2(((clientX - rect.left) / rect.width) * 2 - 1,
+                                -((clientY - rect.top) / rect.height) * 2 + 1);
+  const rc = new THREE.Raycaster(); rc.setFromCamera(ndc, V.cam3d);
+  const hits = rc.intersectObject(V.robot, true);
+  let part = null, mesh = null;
+  if (hits.length){ let o = hits[0].object; mesh = o; while (o){ if (o.userData && o.userData.part){ part = o.userData.part; break; } o = o.parent; } }
+  // antennas are 2px thin — grab one if the click is within ANT_GRAB_PX of its screen rect
+  if (part !== 'antennaL' && part !== 'antennaR'){
+    let best = null;
+    for (const ap of ['antennaL', 'antennaR']){
+      const r = antennaScreenRect(ap); if (!r) continue;
+      const d = rectDist(r, clientX, clientY);
+      if (d < ANT_GRAB_PX && (!best || d < best.d)) best = { part: ap, d };
+    }
+    if (best) return { part: best.part, mesh };
+  }
+  if (part) return { part, mesh };
+  return { part: 'head', mesh: hits.length ? hits[0].object : null };
+}
+// channel a grabbed antenna controls: the 'left_antenna' joint is driven by antR, 'right_antenna' by
+// antL (see updateJoints) — so grabbing meshes under left_antenna writes antR, moving THAT antenna.
+const PART_CH = { antennaL: 'antR', antennaR: 'antL' };
+// apply a pixel drag to whatever part is grabbed
+function dragPart(part, dx, dy){
+  const s = selSeg(); if (!s) return;
+  if (part === 'head'){
+    s.pose.yaw = clampCh('yaw', (s.pose.yaw || 0) + dx * 0.6);
+    s.pose.pitch = clampCh('pitch', (s.pose.pitch || 0) - dy * 0.6);
+  } else if (part === 'body'){
+    s.pose.body = clampCh('body', (s.pose.body || 0) + dx * 0.7);
+  } else {                                   // an antenna: vertical drag = raise/lower (360 range)
+    const ch = PART_CH[part]; s.pose[ch] = clampCh(ch, (s.pose[ch] || 0) - dy * 1.5);
+  }
+  commitEdit(); syncPosePanel();
+}
+function setPoseMode(on){
+  V.edit.posing = on;
+  const pm = document.getElementById('author-posemode'); if (pm) pm.textContent = on ? '✋ Pose' : '🔄 Orbit';
+  if (V.ctrl) V.ctrl.enabled = !(on && authorVisible());   // posing disables camera orbit
+}
+function setupAuthor(){
+  document.querySelectorAll('#author-pose .apose').forEach(inp => {
+    inp.addEventListener('input', () => {
+      const s = selSeg(); if (!s) return; const ch = inp.dataset.ch;
+      s.pose[ch] = clampCh(ch, parseFloat(inp.value) || 0);
+      const lbl = document.querySelector(`#author-pose .aval[data-for="${ch}"]`); if (lbl) lbl.textContent = Math.round(s.pose[ch]);
+      commitEdit();
+    });
+  });
+  const dur = document.getElementById('author-dur');
+  if (dur) dur.addEventListener('change', () => { const s = selSeg(); if (s){ s.dur = Math.max(0.05, parseFloat(dur.value) || 0.4); commitEdit(); renderTimeline(); } });
+  const ease = document.getElementById('author-ease');
+  if (ease) ease.addEventListener('change', () => { const s = selSeg(); if (s){ s.ease = ease.value; commitEdit(); } });
+  const add = document.getElementById('author-addkf'); if (add) add.addEventListener('click', () => window.ReachyViewer.addKeyframe());
+  const pm = document.getElementById('author-posemode'); if (pm) pm.addEventListener('click', () => setPoseMode(!V.edit.posing));
+  // aim pad: drag the dot -> (yaw, pitch) of the selected keyframe (thumbstick style)
+  const pad = document.getElementById('aim-pad');
+  if (pad){
+    let dragging = false;
+    const apply = (cx, cy) => {
+      const s = selSeg(); if (!s) return;
+      const r = pad.getBoundingClientRect();
+      const fx = Math.max(0, Math.min(1, (cx - r.left) / r.width));
+      const fy = Math.max(0, Math.min(1, (cy - r.top) / r.height));
+      const xlo = +pad.dataset.xlo, xhi = +pad.dataset.xhi, ylo = +pad.dataset.ylo, yhi = +pad.dataset.yhi;
+      s.pose[pad.dataset.x] = clampCh(pad.dataset.x, xlo + fx * (xhi - xlo));   // turn (yaw)
+      s.pose[pad.dataset.y] = clampCh(pad.dataset.y, yhi - fy * (yhi - ylo));   // nod (pitch); top = max
+      commitEdit(); syncPosePanel();
+    };
+    pad.addEventListener('pointerdown', e => { if (!selSeg()) return; dragging = true; try { pad.setPointerCapture(e.pointerId); } catch (_) {} apply(e.clientX, e.clientY); });
+    pad.addEventListener('pointermove', e => { if (dragging) apply(e.clientX, e.clientY); });
+    const padEnd = () => { dragging = false; };
+    pad.addEventListener('pointerup', padEnd); pad.addEventListener('pointercancel', padEnd);
+  }
+  // grab a part in 3D and drag it (left button / single touch); 2nd pointer cancels -> orbit
+  const canvas = V.r && V.r.domElement;
+  if (canvas){
+    let active = false, lx = 0, ly = 0, pts = 0, part = null;
+    canvas.addEventListener('pointerdown', e => {
+      pts++; if (!editMode() || pts > 1 || e.button !== 0){ active = false; clearHighlight(); return; }
+      part = pickPart(e.clientX, e.clientY).part; highlightPart(part);
+      active = true; lx = e.clientX; ly = e.clientY; try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
+    });
+    canvas.addEventListener('pointermove', e => {
+      if (active){ const dx = e.clientX - lx, dy = e.clientY - ly; lx = e.clientX; ly = e.clientY; dragPart(part, dx, dy); return; }
+      if (editMode()){ const p = pickPart(e.clientX, e.clientY).part; if (p !== V.hoverPart){ V.hoverPart = p; highlightPart(p); } }   // hover preview
+    });
+    const end = () => { pts = Math.max(0, pts - 1); if (active){ active = false; clearHighlight(); V.hoverPart = null; rebakeEdit(); } };
+    canvas.addEventListener('pointerup', end);
+    canvas.addEventListener('pointercancel', end);
+    canvas.addEventListener('pointerleave', () => { if (!active){ clearHighlight(); V.hoverPart = null; } });
+  }
+  setPoseMode(V.edit.posing);
+  renderTimeline(); syncPosePanel();
 }
 
 // ---- channels chart (SVG) with live playhead + click/drag scrub ----
@@ -566,7 +898,7 @@ window.ReachyViewer = {
     const ground = new THREE.Mesh(new THREE.PlaneGeometry(2,2), new THREE.ShadowMaterial({opacity:0.3}));
     ground.rotation.x = -Math.PI/2; ground.receiveShadow = true; scene.add(ground);
     V.grid = new THREE.GridHelper(1.0, 20, 0x2c3a57, 0x1c2740); scene.add(V.grid);
-    Object.assign(V, {scene, cam, r, ctrl});
+    Object.assign(V, {scene, cam3d: cam, r, ctrl});   // cam3d: the THREE camera (V.cam is the WebRTC cam!)
     V.audio = document.getElementById('reachy-audio');
 
     // kinematics (their passive-joint solver)
@@ -611,6 +943,7 @@ window.ReachyViewer = {
         let geom=null; g.scene.traverse(c=>{ if(c.isMesh && !geom) geom=c.geometry; });
         const mesh = geom ? new THREE.Mesh(geom, material) : g.scene;
         mesh.castShadow = true; mesh.receiveShadow = true;
+        mesh.userData.isAntenna = /antenna/i.test(filename);   // tag for grab-in-3D part picking
         onComplete(mesh);
       }, undefined, (e)=>{ console.error('mesh load', filename, e); onComplete(null, e); });
     };
@@ -635,8 +968,16 @@ window.ReachyViewer = {
       if (V.ready && !V.live){
         const mp = V.moveEl || (V.moveEl = document.getElementById('move-pick'));
         const au = V.authorEl || (V.authorEl = document.getElementById('reachy-author'));
-        const playActive = !!((mp && mp.offsetParent) || (au && au.offsetParent));  // Animate or Author tab
-        if (V.joy.on && V.joy.phase === 'control'){
+        // visible = laid out AND not inside a collapsed top pane (.pane-hidden keeps width but
+        // hides via height:0, so offsetParent alone stays truthy — check the pane too).
+        const vis = el => el && el.offsetParent && !el.closest('.pane-hidden');
+        const playActive = !!(vis(mp) || vis(au));   // Animate sub-tab, or the Author pane
+        const authoring = vis(au) && V.edit.sel >= 0;
+        if (authoring){
+          // the selected keyframe is the single source of truth: the gamepad is folded into it by
+          // joyTick (joyToKeyframe), manual edits write it too — so just render it, never driveSim.
+          if (V.traj) applyFrame();
+        } else if (V.joy.on && V.joy.phase === 'control'){
           driveSim(V.joy.tgt);                      // sim free-control: IK -> full rig, every frame
         } else if (V.traj && !V.joy.on && playActive){
           // drive playback on its own clock (NOT slaved to audio.currentTime — that freezes the
@@ -704,10 +1045,16 @@ window.ReachyViewer = {
     autoControl();   // auto-enable control when a gamepad is on the Control sub-tab
     setInterval(camTick, 700);   // start/stop the robot camera with the Camera accordion + connection
     setInterval(voiceTick, 600); // start/stop the voice loop with the Voice accordion + connection
+    setupAuthor();   // wire the pose panel, timeline, and pose-drag (Phase-1 authoring)
   },
 
   playMove(traj){
     if (typeof traj === 'string'){ traj = traj ? JSON.parse(traj) : null; }
+    // Authored behaviors arrive as a SPEC (eased segments + layers) — bake on the client.
+    // Recorded library moves already arrive baked (have .time) and pass straight through.
+    if (traj && traj.segments !== undefined){
+      traj = traj.segments.length ? bakeSpec(traj) : null;
+    }
     if (!traj || !traj.time){ V.traj = null; showReady(); return; }   // empty selection -> ready
     V.traj = traj; V.dur = traj.time[traj.time.length-1]; V.t = 0; V.playing = true;
     if (!V.live) buildChart(traj);   // while live, the rolling scope owns the chart
@@ -717,6 +1064,81 @@ window.ReachyViewer = {
     }
     buildWaveform(traj.audio || null);   // show the sound's waveform beneath the channels
     const pb = document.getElementById('reachy-play'); if (pb) pb.textContent = '⏸ Pause';
+  },
+
+  // ▶ Preview button: restart the loaded animation from the top. The live edit/select preview
+  // keeps V.traj current, so Preview just rewinds + plays (re-emitting the same spec to the
+  // hidden traj box wouldn't fire its change event, so we drive playback directly here).
+  replay(){
+    if (!V.traj){ showReady(); return; }
+    V.t = 0; V.playing = true;
+    const pb = document.getElementById('reachy-play'); if (pb) pb.textContent = '⏸ Pause';
+    if (V.audio && V.audio.src){ try { V.audio.currentTime = 0; V.audio.play().catch(()=>{}); } catch(e){} }
+  },
+
+  // refit the renderer + camera to #reachy3d's current size (it changes when the viewer is
+  // relocated between the wide Play layout and the smaller Author preview, see relocate()).
+  resize(){
+    const el = document.getElementById('reachy3d');
+    if (!el || !V.r || !V.cam3d) return;
+    const w = el.clientWidth, h = el.clientHeight;
+    if (w < 2 || h < 2) return;   // hidden tab -> 0 size; skip until it's visible
+    V.r.setSize(w, h); V.cam3d.aspect = w/h; V.cam3d.updateProjectionMatrix();
+    if (V.traj && !V.live) buildChart(V.traj);   // chart re-fits to its (also relocated) container
+  },
+
+  // ---- Phase-1 authoring API (called from the Gradio author pane) ----
+  loadSpec(json){                       // load a behavior spec into the editor (from the dropdown)
+    let spec; try { spec = typeof json === 'string' ? (json ? JSON.parse(json) : null) : json; } catch (_) { spec = null; }
+    if (!spec || !Array.isArray(spec.segments)) spec = { fps:40, segments:[], layers:[] };
+    spec.segments = spec.segments.map(s => ({ dur:+s.dur || 0.4, ease:s.ease || 'smooth',
+      pose: Object.assign(zerosPose(), s.pose || {}) }));
+    spec.layers = spec.layers || [];
+    V.edit.spec = spec;
+    V.edit.sel = spec.segments.length ? 0 : -1;
+    rebakeEdit(); parkOnSelected(); renderTimeline(); syncPosePanel();
+  },
+  newSpec(){                            // start a fresh behavior with one editable keyframe
+    V.edit.spec = { fps:40, segments:[{ dur:0.4, ease:'ease_out', pose:zerosPose() }], layers:[] };
+    V.edit.sel = 0; rebakeEdit(); parkOnSelected(); renderTimeline(); syncPosePanel();
+  },
+  getEditSpec(){ return JSON.stringify(V.edit.spec); },
+  setLayers(list){ V.edit.spec.layers = (list || []).map(t => ({ type:t })); commitEdit(); },
+  addKeyframe(){
+    const prev = selSeg() || editSegs()[editSegs().length - 1];
+    const pose = prev ? Object.assign({}, prev.pose) : zerosPose();
+    const dur = parseFloat((document.getElementById('author-dur') || {}).value) || 0.4;
+    const ease = (document.getElementById('author-ease') || {}).value || 'smooth';
+    editSegs().push({ dur, ease, pose });
+    V.edit.sel = editSegs().length - 1;
+    rebakeEdit(); parkOnSelected(); renderTimeline(); syncPosePanel();
+  },
+  selectKeyframe(i){ V.edit.sel = i; rebakeEdit(); parkOnSelected(); renderTimeline(); syncPosePanel(); },
+  deleteKeyframe(i){
+    editSegs().splice(i, 1);
+    if (V.edit.sel >= editSegs().length) V.edit.sel = editSegs().length - 1;
+    rebakeEdit(); parkOnSelected(); renderTimeline(); syncPosePanel();
+  },
+
+  // There is ONE 3D viewer + channels chart. Move those DOM blocks into the active top tab's slot
+  // (Play's home spots, or the Author tab's preview/channels slots) so each tab gets its own layout
+  // without a second WebGL context. The canvas survives the move; resize() refits afterward.
+  relocate(toAuthor){
+    const vb = document.getElementById('viewer-block'), cb = document.getElementById('chart-block');
+    const vSlot = document.getElementById(toAuthor ? 'author-viewer-slot' : 'play-viewer-home');
+    const cSlot = document.getElementById(toAuthor ? 'author-chart-slot' : 'play-chart-home');
+    if (vb && vSlot && vb.parentElement !== vSlot) vSlot.appendChild(vb);
+    if (cb && cSlot && cb.parentElement !== cSlot) cSlot.appendChild(cb);
+    // posing disables camera orbit (Author only); Play always orbits
+    if (V.ctrl) V.ctrl.enabled = toAuthor ? !V.edit.posing : true;
+    // frame the robot: Author starts zoomed out (more room to pose); Play sits closer
+    if (V.cam3d && V.ctrl){
+      const t = V.ctrl.target, f = toAuthor ? 1.7 : 1.0;   // play offset from target = (0.34,0.15,0.40)
+      V.cam3d.position.set(t.x + 0.34 * f, t.y + 0.15 * f, t.z + 0.40 * f);
+      V.ctrl.update();
+    }
+    if (toAuthor){ parkOnSelected(); syncPosePanel(); renderTimeline(); }
+    setTimeout(() => window.ReachyViewer.resize(), 50);   // let the new layout settle, then refit
   },
 
   // --- live connect: mirror the real robot via the daemon state WebSocket ---

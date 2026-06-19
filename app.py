@@ -35,6 +35,8 @@ from reachy_motion.web import (  # noqa: E402
     CONTAINER_HTML,
     GAMEPAD_HTML,
     HEAD_HTML,
+    POSE_PANEL_HTML,
+    TIMELINE_HTML,
     move_trajectory,
     pose_to_goto,
     pose_to_render,
@@ -91,6 +93,11 @@ def go_simulator():
     controller.disconnect()
     _connected[0] = False
     return (False, _SIM_MSG, gr.update(value=False), gr.update(value=False))  # connected, status, hg, comp
+
+
+def on_enter_author():
+    """Authoring is simulator-only — drop any robot connection so it's never 'Connected'."""
+    return go_simulator()
 
 
 def go_connected():
@@ -218,50 +225,70 @@ def _ui_from_spec(spec: dict):
     return rows, layers
 
 
-def _bake_to_traj(spec: dict) -> str:
-    try:
-        if not spec.get("segments"):
-            return ""
-        return json.dumps(anim.bake_spec(spec))
-    except Exception as e:  # noqa: BLE001
-        print(f"[author] bake error: {e}")
-        return ""
-
-
 def author_preview(df, layers):
-    return _bake_to_traj(_spec_from_ui(df, layers))
+    """Push the animation SPEC (not a baked trajectory) to the viewer.
+
+    The browser bakes it client-side (pose interpolation + WASM IK, per frame on its render
+    loop — the same path live gamepad control uses). This keeps the wire payload tiny
+    (hundreds of bytes vs an 18-60KB baked trajectory) and moves the per-frame IK off the
+    server, so editing/browsing no longer ships big payloads through Gradio's serial queue.
+    Empty (no segments) -> "" so the viewer falls back to the static ready pose.
+    """
+    spec = _spec_from_ui(df, layers)
+    return json.dumps(spec) if spec.get("segments") else ""
 
 
-def author_pick(name):
+# --- Phase-1 authoring: the viewer owns the spec client-side; the server only loads/saves it ---
+def author_load(name):
+    """Load a behavior into the 3D editor: set the name + life-layer checkboxes, and push the
+    spec JSON to the hidden carrier (whose .change calls viewer.loadSpec)."""
     spec = behaviors_store.get(name)
     if not spec:
-        return gr.update(), gr.update(), gr.update(), gr.update()
-    rows, layers = _ui_from_spec(spec)
-    return name, rows, layers, _bake_to_traj(spec)
+        return gr.update(), gr.update(), gr.update()
+    layers = [l["type"] for l in spec.get("layers", []) if l.get("type") in anim.LAYERS]
+    return name, layers, json.dumps(spec)
 
 
-def author_new():
-    rows = [[0.3, "ease_out"] + [0.0] * len(EDIT_CH),
-            [0.5, "back"] + [0.0] * len(EDIT_CH)]
-    return "new behavior", rows, [], ""
+def author_new_ui():
+    """New behavior: clear the name + layers (the .then JS resets the editor to one keyframe)."""
+    return "", []
 
 
-def author_add_segment(df):
-    rows = _rows(df)
-    prev = rows[-1] if rows else ([0.4, "smooth"] + [0.0] * len(EDIT_CH))
-    rows.append([0.4, "smooth"] + list(prev[2:2 + len(EDIT_CH)]))  # carry the last pose forward
-    return rows
+def _parse_spec(spec_json: str) -> dict:
+    try:
+        spec = json.loads(spec_json) if spec_json else None
+    except Exception:  # noqa: BLE001
+        spec = None
+    if not isinstance(spec, dict) or not spec.get("segments"):
+        return {}
+    return spec
 
 
-def author_save(name, df, layers):
-    name = (name or "").strip() or behaviors_store.unique_name()
-    behaviors_store.save(name, _spec_from_ui(df, layers))
+def _name_and_spec(payload: str):
+    """Save/Dup js sends one JSON blob {name, spec} (spec is itself a JSON string) — single input
+    + single js return is the reliable Gradio pattern (multi-value js→inputs is flaky)."""
+    try:
+        d = json.loads(payload) if payload else {}
+    except Exception:  # noqa: BLE001
+        d = {}
+    return (d.get("name") or "").strip(), _parse_spec(d.get("spec") or "")
+
+
+def author_save(payload):
+    name, spec = _name_and_spec(payload)
+    if not spec:
+        return gr.update(), "⚠️ add a keyframe before saving"
+    name = name or behaviors_store.unique_name()
+    behaviors_store.save(name, spec)
     return gr.update(choices=behaviors_store.list_behaviors(), value=name), f"💾 saved **{name}**"
 
 
-def author_duplicate(name, df, layers):
-    new = behaviors_store.unique_name(f"{(name or 'behavior').strip()} copy")
-    behaviors_store.save(new, _spec_from_ui(df, layers))
+def author_duplicate(payload):
+    name, spec = _name_and_spec(payload)
+    if not spec:
+        return gr.update(), gr.update(), "⚠️ nothing to duplicate"
+    new = behaviors_store.unique_name(f"{name or 'behavior'} copy")
+    behaviors_store.save(new, spec)
     return gr.update(choices=behaviors_store.list_behaviors(), value=new), new, f"⧉ duplicated to **{new}**"
 
 
@@ -356,7 +383,8 @@ def build() -> gr.Blocks:
         f"window.REACHY_READY={json.dumps(ready_render())};</script>\n"
         f'<script src="{GSTWEBRTC_URL}"></script>\n'        # robot camera (WebRTC consumer)
         + HEAD_HTML                                          # three.js importmap (must be inline)
-        + f'\n<script type="module" src="{VIEWER_JS_URL}"></script>'  # the viewer (extracted from web.py)
+        # cache-bust the module by file mtime so viewer.js edits always reload (it's a fixed URL)
+        + f'\n<script type="module" src="{VIEWER_JS_URL}?_v={int((WEB_ROOT / "viewer.js").stat().st_mtime)}"></script>'
     )
     css = """
 /* dark-orange theme when controlling the real robot */
@@ -366,6 +394,20 @@ body.reachy-connected .tab-nav button.selected { color:#fb923c !important; borde
 body.reachy-connected button.primary { background:#c2410c !important; border-color:#9a3412 !important; }
 body.reachy-connected h1 { color:#fb923c !important; }
 .reachy-hidden { display:none !important; }   /* in the DOM (JS-clickable) but not shown */
+/* Author tab: taller preview so the character is easy to see while posing */
+#author-viewer-slot #reachy3d { height: 480px !important; }
+/* Top Play/Author panes: hide by collapsing height (NOT display:none) so the segments table
+   keeps its width even when its pane is hidden — display:none gives it 0 width and the
+   Dataframe's TanStack column logic recurses (stack overflow) when it's shown. */
+.pane-hidden { height:0 !important; min-height:0 !important; overflow:hidden !important;
+               margin:0 !important; padding:0 !important; opacity:0 !important; pointer-events:none !important; }
+/* tab-bar buttons styled as tabs (elem_id lands on the <button>, which carries .maintab) */
+#top-tabbar { gap:2px; border-bottom:1px solid rgba(255,255,255,0.12); margin-bottom:10px; }
+button.maintab {
+  background:transparent !important; border:none !important; border-bottom:2px solid transparent !important;
+  border-radius:0 !important; box-shadow:none !important; color:rgba(255,255,255,0.55) !important;
+  font-weight:600 !important; font-size:15px !important; }
+button.maintab.tab-active { color:#fff !important; border-bottom-color:#3b82f6 !important; }
 """
     with gr.Blocks(title="Reachy Mini — Move Dataset Viewer", head=head, css=css) as demo:
         gr.Markdown(
@@ -379,86 +421,88 @@ body.reachy-connected h1 { color:#fb923c !important; }
         # pose_apply = gr.Textbox(visible=False)  # backend -> JS applyPose (value passed to .change js)
         # default_json = gr.Textbox(visible=False)  # backend -> JS window.REACHY_DEFAULT_POSE
         connected = gr.State(False)
-        with gr.Row():
-            with gr.Column(scale=1):
-                with gr.Tabs():   # mode: Simulator (off-robot) <-> Connected (live robot)
-                    with gr.Tab("🖥️ Simulator") as sim_tab:
-                        gr.Markdown("Off-robot preview.")
-                    with gr.Tab("🔌 Connected") as conn_tab:
-                        gr.Markdown("Live robot.")
-                        with gr.Row():
-                            daemon_md = gr.Markdown(_daemon_status_md())
-                            daemon_restart_btn = gr.Button("🔄 Restart daemon", scale=0, size="sm")
-                        daemon_timer = gr.Timer(8.0)  # live daemon health
-                        hand_guide_chk = gr.Checkbox(label="Hand-guide (move by hand)", value=False)
-                        compliant_chk = gr.Checkbox(label=" ↳ Compliant (firmer; holds position)", value=False)
-                status = gr.Markdown("not connected")
-                with gr.Tabs():   # activity: Control (gamepad) <-> Animate (moves)
-                    with gr.Tab("🎮 Control") as control_tab:
-                        gr.Markdown("Connect a gamepad — **L stick** look (pan/tilt) · "
-                                    "**R stick** turn body + height · **L2/L1·R2/R1** antennas · "
-                                    "**L3** ready pose. FPS-style (head turns relative to the body); "
-                                    "movement is bounded to the robot's reachable range so it never "
-                                    "goes out of the workspace.")
-                        gr.HTML(GAMEPAD_HTML)
-                    with gr.Tab("🎬 Animate") as animate_tab:
-                        picker = gr.Dropdown(choices=names, value=None, label="Move",
-                                             filterable=True, elem_id="move-pick")
-                        info = gr.Markdown()
-                # --- Poses UI disabled for now (kept for reuse) ---
-                # with gr.Accordion("Poses", open=True):
-                #     with gr.Row():
-                #         pose_dd = gr.Dropdown(choices=poses.list_poses(), value=None,
-                #                               label="Go to pose", filterable=True, scale=4)
-                #         del_btn = gr.Button("🗑", scale=1, min_width=44)
-                #     pose_save_btn = gr.Button("💾 Save current pose  ·  or Space / R3",
-                #                               elem_id="pose_save_btn", size="sm")
-                #     l3_dd = gr.Dropdown(choices=poses.list_poses(), value=poses.get_default(),
-                #                         label="L3 reset pose", filterable=True)
-            with gr.Column(scale=2):
-                gr.HTML(CONTAINER_HTML)
-            with gr.Column(scale=2):
-                # camera (robot's live WebRTC feed); collapse to turn it off, expand to start
-                with gr.Accordion("📷 Camera", open=False):
-                    gr.HTML(CAMERA_HTML)
-                # voice loop (mic/VAD/STT + repeat/TTS): runs only while this is expanded (like camera)
-                with gr.Accordion("🎙 Voice", open=False):
-                    gr.HTML(AUDIO_HTML)
-                    voice_dd = gr.Dropdown(tts.list_voices(), value=tts.current_voice(),
-                                           label="Reachy's voice", filterable=True)
-                audio_json = gr.Textbox(visible=False)  # backend mic/dialogue snapshot -> JS pushAudio
-                audio_timer = gr.Timer(0.12)
-                voice_in = gr.Textbox(visible=False)    # carries voiceWanted() '1'/'0' to on_set_voice
-                # CSS-hidden (not visible=False) so it stays in the DOM and JS can click it
-                voice_btn = gr.Button("voice", elem_id="voice-set-btn", elem_classes=["reachy-hidden"])
-                gr.HTML(CHART_HTML)
+        # Top-level Play / Author panes. NOT gr.Tabs: an inactive gr.Tab is display:none, which
+        # gives the segments Dataframe 0 width and trips a TanStack column-grouping recursion when
+        # it's shown. These panes hide via height-collapse (.pane-hidden), so the table keeps its
+        # width even when hidden (the same reason the old authoring Accordion never hit this).
+        with gr.Row(elem_id="top-tabbar"):
+            play_tab_btn = gr.Button("▶ Play", elem_id="tab-play", elem_classes=["maintab", "tab-active"])
+            author_tab_btn = gr.Button("✏️ Author", elem_id="tab-author", elem_classes=["maintab"])
 
-        # ===== Authoring (full width, below the viewer): create & edit animations =====
-        # Simulator-only: previews play in the 3D viewer above while this is expanded.
-        with gr.Accordion("✏️ Author — create & edit animations (simulator preview)", open=False):
+        with gr.Column(elem_id="play-pane"):
+            with gr.Row():
+                with gr.Column(scale=1):
+                    with gr.Tabs():   # mode: Simulator (off-robot) <-> Connected (live robot)
+                        with gr.Tab("🖥️ Simulator") as sim_tab:
+                            gr.Markdown("Off-robot preview.")
+                        with gr.Tab("🔌 Connected") as conn_tab:
+                            gr.Markdown("Live robot.")
+                            with gr.Row():
+                                daemon_md = gr.Markdown(_daemon_status_md())
+                                daemon_restart_btn = gr.Button("🔄 Restart daemon", scale=0, size="sm")
+                            daemon_timer = gr.Timer(8.0)  # live daemon health
+                            hand_guide_chk = gr.Checkbox(label="Hand-guide (move by hand)", value=False)
+                            compliant_chk = gr.Checkbox(label=" ↳ Compliant (firmer; holds position)", value=False)
+                    status = gr.Markdown("not connected")
+                    with gr.Tabs():   # activity: Control (gamepad) <-> Animate (moves)
+                        with gr.Tab("🎮 Control") as control_tab:
+                            gr.Markdown("Connect a gamepad — **L stick** look (pan/tilt) · "
+                                        "**R stick** turn body + height · **L2/L1·R2/R1** antennas · "
+                                        "**L3** ready pose. FPS-style (head turns relative to the body); "
+                                        "movement is bounded to the robot's reachable range so it never "
+                                        "goes out of the workspace.")
+                            gr.HTML(GAMEPAD_HTML)
+                        with gr.Tab("🎬 Animate") as animate_tab:
+                            picker = gr.Dropdown(choices=names, value=None, label="Move",
+                                                 filterable=True, elem_id="move-pick")
+                            info = gr.Markdown()
+                with gr.Column(scale=2):
+                    gr.HTML('<div id="play-viewer-home">' + CONTAINER_HTML + '</div>')
+                with gr.Column(scale=2):
+                    # camera (robot's live WebRTC feed); collapse to turn it off, expand to start
+                    with gr.Accordion("📷 Camera", open=False):
+                        gr.HTML(CAMERA_HTML)
+                    # voice loop (mic/VAD/STT + repeat/TTS): runs only while this is expanded (like camera)
+                    with gr.Accordion("🎙 Voice", open=False):
+                        gr.HTML(AUDIO_HTML)
+                        voice_dd = gr.Dropdown(tts.list_voices(), value=tts.current_voice(),
+                                               label="Reachy's voice", filterable=True)
+                    audio_json = gr.Textbox(visible=False)  # backend mic/dialogue snapshot -> JS pushAudio
+                    audio_timer = gr.Timer(0.12)
+                    voice_in = gr.Textbox(visible=False)    # carries voiceWanted() '1'/'0' to on_set_voice
+                    # CSS-hidden (not visible=False) so it stays in the DOM and JS can click it
+                    voice_btn = gr.Button("voice", elem_id="voice-set-btn", elem_classes=["reachy-hidden"])
+                    gr.HTML('<div id="play-chart-home">' + CHART_HTML + '</div>')
+
+        # Author pane (starts collapsed): controls left, smaller live preview right, channels below.
+        # The single 3D viewer + channels chart relocate in here (JS) while it's open, then back.
+        with gr.Column(elem_id="author-pane", elem_classes=["pane-hidden"]):
             gr.HTML('<div id="reachy-author"></div>')   # marker for the viewer's playback gate
-            gr.Markdown("Pick a **Behavior** to view/edit (or **New**). Each row = ease to that pose "
-                        "over `dur` s; edits **preview live** in the viewer above (looping). **Save** to keep it.")
+            gr.Markdown("Pick a **Behavior** to edit (or **New**). **Pose** the robot in 3D and "
+                        "press **＋ Keyframe** to build the animation — each keyframe eases from the "
+                        "one before it. ▶ Preview plays it; **Save** keeps it.")
+            author_spec_in = gr.Textbox(visible=False)   # server -> JS: load a spec into the editor
+            author_save_in = gr.Textbox(visible=False)   # JS -> server: {name, spec} for Save/Dup
             with gr.Row():
-                behavior_dd = gr.Dropdown(behaviors_store.list_behaviors(), value=None,
-                                          label="Behavior", filterable=True, scale=3)
-                name_tb = gr.Textbox(label="Name", scale=3)
-                new_btn = gr.Button("➕ New", scale=1, min_width=64)
-                dup_btn = gr.Button("⧉ Dup", scale=1, min_width=64)
-                del_btn2 = gr.Button("🗑", scale=0, min_width=44)
-            seg_df = gr.Dataframe(
-                headers=SEG_COLS, datatype=SEG_TYPES, column_count=(len(SEG_COLS), "fixed"),
-                row_count=(1, "dynamic"), interactive=True, wrap=True,
-                label="Segments — each eases to this pose over `dur` seconds (degrees / mm)")
-            with gr.Row():
-                layers_chk = gr.CheckboxGroup(["breath", "ear_idle"], value=[],
-                                              label="Life layers", scale=3)
-                preview_btn = gr.Button("▶ Preview", variant="primary", scale=1)
-                addseg_btn = gr.Button("➕ Segment", scale=1)
-                save_btn = gr.Button("💾 Save", scale=1)
-            gr.Markdown(f"<span style='font-size:11px;opacity:0.6'>{EASE_HINT} · "
-                        f"channels: z(mm) · roll/pitch/yaw(deg) · antL/antR=ears(deg) · body(deg)</span>")
-            author_msg = gr.Markdown()
+                with gr.Column(scale=3):   # author controls (left): pick / pose / keyframe / actions
+                    with gr.Row():
+                        behavior_dd = gr.Dropdown(behaviors_store.list_behaviors(), value=None,
+                                                  label="Behavior", filterable=True, scale=3)
+                        name_tb = gr.Textbox(label="Name", scale=3, elem_id="author-name")
+                        new_btn = gr.Button("➕ New", scale=1, min_width=64)
+                        dup_btn = gr.Button("⧉ Dup", scale=1, min_width=64)
+                        del_btn2 = gr.Button("🗑", scale=0, min_width=44)
+                    gr.HTML(POSE_PANEL_HTML)   # pose sliders + ＋ Keyframe (driven by viewer.js)
+                    with gr.Row():
+                        layers_chk = gr.CheckboxGroup(["breath", "ear_idle"], value=[],
+                                                      label="Life layers", scale=3)
+                        preview_btn = gr.Button("▶ Preview", variant="primary", scale=1)
+                        save_btn = gr.Button("💾 Save", scale=1)
+                    author_msg = gr.Markdown()
+                with gr.Column(scale=2):   # smaller live preview (the relocated 3D viewer)
+                    gr.HTML('<div id="author-viewer-slot"></div>')
+            gr.HTML(TIMELINE_HTML)   # keyframe chips (driven by viewer.js)
+            gr.HTML('<div id="author-chart-slot"></div>')   # channels viewer at the bottom
 
         # mode tabs: Simulator (off-robot) <-> Connected (live robot + dark-orange theme)
         mode_out = [connected, status, hand_guide_chk, compliant_chk]
@@ -477,6 +521,27 @@ body.reachy-connected h1 { color:#fb923c !important; }
         voice_dd.change(lambda v: tts.set_voice(v), voice_dd, None)   # pick Reachy's TTS voice
         audio_json.change(None, audio_json, None,
                           js="(j) => window.ReachyViewer.pushAudio(j)")
+        # top tabs (custom panes): show one, collapse the other, and relocate the viewer + chart
+        play_tab_btn.click(None, None, None, js="""() => {
+            document.getElementById('play-pane').classList.remove('pane-hidden');
+            document.getElementById('author-pane').classList.add('pane-hidden');
+            document.getElementById('tab-play').classList.add('tab-active');
+            document.getElementById('tab-author').classList.remove('tab-active');
+            window.ReachyViewer.relocate(false);
+        }""")
+        # Entering Author: authoring is simulator-only, so force Simulator mode (disconnect the
+        # robot via the sub-tab) and the blue theme before relocating the viewer in.
+        author_tab_btn.click(on_enter_author, None, [connected, status, hand_guide_chk, compliant_chk],
+                             js="""() => {
+            const sim = [...document.querySelectorAll('button[role=tab]')].find(b => /Simulator/.test(b.textContent));
+            if (sim && !sim.classList.contains('selected')) sim.click();   // -> go_simulator (disconnect)
+            document.getElementById('author-pane').classList.remove('pane-hidden');
+            document.getElementById('play-pane').classList.add('pane-hidden');
+            document.getElementById('tab-author').classList.add('tab-active');
+            document.getElementById('tab-play').classList.remove('tab-active');
+            window.ReachyViewer.relocate(true);
+            window.ReachyViewer.setMode(false);   // blue theme + simulator viewer
+        }""")
         # activity tabs: entering Control/Animate while connected enables motors (clears hand-guide)
         control_tab.select(on_enter_activity, connected, [hand_guide_chk, compliant_chk])
         animate_tab.select(on_enter_activity, connected, [hand_guide_chk, compliant_chk])
@@ -500,15 +565,26 @@ body.reachy-connected h1 { color:#fb923c !important; }
         traj.change(None, inputs=traj, outputs=None, js="(t) => window.ReachyViewer.playMove(t)")
         picker.change(select_move, inputs=[picker, connected], outputs=[traj, info])
 
-        # --- authoring (simulator-only): edits bake -> traj -> viewer.playMove ---
-        behavior_dd.change(author_pick, behavior_dd, [name_tb, seg_df, layers_chk, traj])
-        seg_df.change(author_preview, [seg_df, layers_chk], traj)
-        layers_chk.change(author_preview, [seg_df, layers_chk], traj)
-        preview_btn.click(author_preview, [seg_df, layers_chk], traj)
-        addseg_btn.click(author_add_segment, seg_df, seg_df)
-        new_btn.click(author_new, None, [name_tb, seg_df, layers_chk, traj])
-        save_btn.click(author_save, [name_tb, seg_df, layers_chk], [behavior_dd, author_msg])
-        dup_btn.click(author_duplicate, [name_tb, seg_df, layers_chk], [behavior_dd, name_tb, author_msg])
+        # --- authoring (Phase 1): the viewer owns the spec; the server only loads/saves it ---
+        # Editing (pose-drag, sliders, ＋Keyframe, timeline) is 100% client-side in viewer.js — no
+        # round-trips while authoring. Gradio handles only: load a behavior into the editor, Save,
+        # New, Dup, Delete, and mirroring the life-layer checkboxes into the client spec.
+        # Load: server reads the stored spec -> hidden carrier -> viewer.loadSpec().
+        behavior_dd.change(author_load, behavior_dd, [name_tb, layers_chk, author_spec_in],
+                           show_progress="hidden")
+        author_spec_in.change(None, author_spec_in, None,
+                              js="(s) => window.ReachyViewer.loadSpec(s)")
+        # life layers: toggle -> push into the client spec and re-bake (no server work)
+        layers_chk.change(None, layers_chk, None, js="(l) => window.ReachyViewer.setLayers(l)")
+        # New: clear name + layers, then reset the editor to a single fresh keyframe
+        new_btn.click(author_new_ui, None, [name_tb, layers_chk]).then(
+            None, None, None, js="() => window.ReachyViewer.newSpec()")
+        preview_btn.click(None, None, None, js="() => window.ReachyViewer.replay()")
+        # Save / Dup: js packs {name, spec} from the DOM + viewer into the single hidden carrier
+        _pack_js = ("() => JSON.stringify({name: (document.querySelector('#author-name textarea,"
+                    "#author-name input')||{}).value || '', spec: window.ReachyViewer.getEditSpec()})")
+        save_btn.click(author_save, author_save_in, [behavior_dd, author_msg], js=_pack_js)
+        dup_btn.click(author_duplicate, author_save_in, [behavior_dd, name_tb, author_msg], js=_pack_js)
         del_btn2.click(author_delete, behavior_dd, [behavior_dd, author_msg])
         # no auto-load: the dropdown starts empty and the viewer shows a static neutral pose
     return demo
