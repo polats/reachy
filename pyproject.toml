@@ -5,9 +5,11 @@ description = "Text-to-motion + sound behaviors for the Reachy Mini robot"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "faster-whisper>=1.2.1",
     "gradio>=6.15.1",
     "imageio[ffmpeg]>=2.37.3",
     "matplotlib>=3.11.0",
+    "onnxruntime>=1.27.0",
     "reachy-mini[mujoco,placo-kinematics]>=1.8.3",
     "trimesh>=4.12.2",
 ]

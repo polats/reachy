@@ -160,6 +160,50 @@ pipeline (restart the daemon's media) with a different mode. Practical path, **n
 Trade-offs: each switch costs a media restart (a few seconds, brief feed drop), and the wider 4K
 modes run at 30 fps and use much more WebRTC bandwidth than the default 1080p@60.
 
+## Voice / mic monitor
+
+Below the camera there's a **🎤 Voice** indicator + live waveform, similar to the desktop app's
+audio visualizer (which analyses the WebRTC audio track with an `AnalyserNode`). We can't use that
+path because the daemon runs **video-only** (its audio source auto-detect returns `None` and the
+fallback `pulsesrc` tore down the video pipeline). Instead we capture the mic **directly**:
+
+- `src/reachy_motion/audio_monitor.py` runs `arecord` on the **Reachy Mini Audio** card (found by
+  name in `/proc/asound/cards`) in 512-sample chunks, and exposes `snapshot()` → `{levels, level, active}`.
+  - `levels`/`level` = normalized RMS (`gain 4`) — used **only** for the visual waveform amplitude.
+  - `active` ("voice detected") = **Silero VAD** (the vendored ONNX model
+    `assets/silero/silero_vad_16k.onnx`, run via **onnxruntime — no torch**) with a `~384 ms`
+    hangover. It's speech-specific, so loud non-speech (claps, fans) doesn't false-trigger the way
+    the old RMS threshold did. **Gotcha:** Silero v5 prepends a 64-sample context to each 512-chunk,
+    so the model input is **576 samples** and the recurrent `state[2,1,128]` must be threaded across
+    chunks — feeding bare 512 returns ~0 on everything (verified: jfk speech → 1.00, silence → 0.009).
+- `app.py`: a `gr.Timer(0.12)` polls `audio_tick(connected)` → JSON into a hidden textbox →
+  `ReachyViewer.pushAudio()` draws the waveform on `#reachy-audio-mon` and toggles the
+  voice-detected dot/label. The monitor only runs while connected (the mic is free because the
+  daemon doesn't capture audio).
+
+This is independent of the camera/WebRTC and carries **no risk to the video pipeline**. If daemon
+audio is ever fixed, the desktop-app approach (analyse the WebRTC audio track) would be preferable.
+
+### Live transcription (streaming STT)
+
+Below the waveform, speech is transcribed live (matching the Reachy local pattern: arecord + VAD +
+Whisper, like curtburk's local agent and dwain-barnes's fork — but no fastrtc/cloud). It's
+**pseudo-streaming faster-whisper** (WhisperLive-style):
+
+- `audio_monitor.py` buffers raw audio while Silero says speech, and queues the completed utterance
+  on speech-end (`partial_audio()` / `pop_final()`).
+- `src/reachy_motion/transcribe.py` (`StreamingTranscriber`) runs **faster-whisper `large-v3-turbo`
+  on the GPU** (`device=cuda, float16`) in a worker: re-decodes the in-progress utterance every
+  ~0.6 s → **interim** text; decodes the finished utterance once more → **committed** line.
+- `app.py` `audio_tick` starts/stops it with the connection and merges `{committed, interim,
+  stt_ready}` into the snapshot; `ReachyViewer.pushAudio` shows committed lines (solid) + interim
+  (grey italic) in `#reachy-transcript`.
+
+Deps: `faster-whisper` (+ ctranslate2/tokenizers); the model auto-downloads (~1.5 GB) on first
+connect, then loads in ~7 s. GPU works out of the box here (CTranslate2 found the CUDA libs — no
+extra setup). Verified: jfk → perfect text in 0.59 s; injected utterance committed in 0.60 s.
+To switch model/lang/CPU, edit the constants at the top of `transcribe.py`.
+
 ## Troubleshooting
 
 | Symptom | Cause / check |

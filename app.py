@@ -9,6 +9,7 @@ antenna + body-yaw data, alongside its description and per-DOF channel plots.
 
 from __future__ import annotations
 
+import itertools
 import json
 import sys
 from pathlib import Path
@@ -17,11 +18,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
 
 import gradio as gr  # noqa: E402
 
+from reachy_motion import audio_monitor  # noqa: E402
 from reachy_motion import dataset as ds  # noqa: E402
 from reachy_motion import daemon_control  # noqa: E402
 from reachy_motion import poses  # noqa: E402
+from reachy_motion import transcribe  # noqa: E402
 from reachy_motion.robot_control import RobotController  # noqa: E402
 from reachy_motion.web import (  # noqa: E402
+    AUDIO_HTML,
     CAMERA_HTML,
     CHART_HTML,
     CONTAINER_HTML,
@@ -112,6 +116,25 @@ def on_restart_daemon(connected: bool):
         except Exception:  # noqa: BLE001
             pass
     return "🟢 **Daemon restarted** (`:8000`)"
+
+
+_audio_ctr = itertools.count()
+
+
+def audio_tick(connected: bool):
+    """Poll the mic monitor (running it only while connected); push levels to the viewer."""
+    if not connected:
+        if audio_monitor.monitor.running:
+            audio_monitor.monitor.stop()
+        if transcribe.transcriber.running:
+            transcribe.transcriber.stop()
+        return ""  # clears the indicator/waveform/transcript
+    audio_monitor.monitor.start()
+    transcribe.transcriber.start()
+    snap = audio_monitor.monitor.snapshot()
+    snap.update(transcribe.transcriber.snapshot())  # committed, interim, stt_ready
+    snap["n"] = next(_audio_ctr)  # vary the value so .change always fires
+    return json.dumps(snap)
 
 
 def on_enter_activity(connected: bool):
@@ -269,6 +292,9 @@ body.reachy-connected h1 { color:#fb923c !important; }
                 # camera (robot's live WebRTC feed); collapse to turn it off, expand to start
                 with gr.Accordion("📷 Camera", open=False):
                     gr.HTML(CAMERA_HTML)
+                gr.HTML(AUDIO_HTML)   # robot mic: voice-detected indicator + live waveform
+                audio_json = gr.Textbox(visible=False)  # backend mic levels -> JS pushAudio
+                audio_timer = gr.Timer(0.12)
                 gr.HTML(CHART_HTML)
 
         # mode tabs: Simulator (off-robot) <-> Connected (live robot + dark-orange theme)
@@ -280,6 +306,10 @@ body.reachy-connected h1 { color:#fb923c !important; }
         # daemon health: live status + one-click restart (relaunches with Placo + camera plugins)
         daemon_timer.tick(lambda: _daemon_status_md(), None, daemon_md, show_progress="hidden")
         daemon_restart_btn.click(on_restart_daemon, connected, daemon_md)
+        # robot mic: poll levels while connected, render voice indicator + waveform
+        audio_timer.tick(audio_tick, connected, audio_json, show_progress="hidden")
+        audio_json.change(None, audio_json, None,
+                          js="(j) => window.ReachyViewer.pushAudio(j)")
         # activity tabs: entering Control/Animate while connected enables motors (clears hand-guide)
         control_tab.select(on_enter_activity, connected, [hand_guide_chk, compliant_chk])
         animate_tab.select(on_enter_activity, connected, [hand_guide_chk, compliant_chk])

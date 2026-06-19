@@ -882,6 +882,39 @@ window.ReachyViewer = {
 
   getCurrentPose(){ const p = currentPose(); return p ? JSON.stringify(p) : ""; },
 
+  pushAudio(j){    // render the robot mic's level waveform + voice-detected indicator
+    const cv = document.getElementById('reachy-audio-mon');
+    const dot = document.getElementById('reachy-voice-dot');
+    const label = document.getElementById('reachy-voice-label');
+    if (!cv) return;
+    const ctx = cv.getContext('2d');
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    let d = null; try { d = j ? JSON.parse(j) : null; } catch(e){}
+    if (!d){
+      if (dot) dot.style.background = '#444';
+      if (label){ label.textContent = "connect to hear the robot's mic"; }
+      const tr = document.getElementById('reachy-transcript'); if (tr) tr.innerHTML = '';
+      return;
+    }
+    const levels = d.levels || [], n = levels.length, w = cv.width, h = cv.height, bw = w / Math.max(1, n);
+    ctx.fillStyle = d.active ? '#fb923c' : '#60a5fa';
+    for (let i = 0; i < n; i++){
+      const bh = Math.max(1, levels[i] * h);
+      ctx.fillRect(i * bw, (h - bh) / 2, bw * 0.7, bh);   // centered bars
+    }
+    if (dot) dot.style.background = d.active ? '#22c55e' : '#3b4252';
+    if (label) label.textContent = d.active ? 'voice detected' : 'listening…';
+    // live transcript: committed lines (solid) + the in-progress utterance (grey/italic)
+    const tr = document.getElementById('reachy-transcript');
+    if (tr){
+      const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+      let html = (d.committed || []).slice(-3).map(t => '<div>' + esc(t) + '</div>').join('');
+      if (d.interim) html += '<div style="opacity:0.55;font-style:italic">' + esc(d.interim) + '</div>';
+      if (!html) html = '<div style="opacity:0.4">' + (d.stt_ready === false ? 'loading speech model…' : 'say something…') + '</div>';
+      tr.innerHTML = html;
+    }
+  },
+
   applyPose(payload){
     if (typeof payload === 'string'){ if (!payload) return; payload = JSON.parse(payload.split('|')[0]); }
     if (!payload || !V.ready) return;
@@ -947,6 +980,19 @@ CONTAINER_HTML = """
   </div>
   <div style="font-size:12px;opacity:0.7">drag to orbit · scroll to zoom · scrub the timeline · Connect (top-left) mirrors the live USB robot</div>
   <audio id="reachy-audio" loop preload="auto" style="display:none"></audio>
+</div>
+"""
+
+AUDIO_HTML = """
+<div style="display:flex;flex-direction:column;gap:4px;margin-top:6px">
+  <div style="display:flex;align-items:center;gap:8px">
+    <span id="reachy-voice-dot" style="width:10px;height:10px;border-radius:50%;background:#444;display:inline-block"></span>
+    <span style="font-size:13px;font-weight:600;opacity:0.85">🎤 Voice</span>
+    <span id="reachy-voice-label" style="font-size:12px;opacity:0.6">connect to hear the robot's mic</span>
+  </div>
+  <canvas id="reachy-audio-mon" width="600" height="44"
+          style="width:100%;height:44px;background:rgba(255,255,255,0.03);border-radius:6px"></canvas>
+  <div id="reachy-transcript" style="font-size:13px;line-height:1.45;min-height:2.8em;margin-top:2px"></div>
 </div>
 """
 
