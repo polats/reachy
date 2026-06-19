@@ -17,3 +17,4 @@ MUJOCO_LOG.TXT
 poses.json
 assets/kokoro/*.onnx
 assets/kokoro/*.bin
+behaviors.json

@@ -634,10 +634,11 @@ window.ReachyViewer = {
       const dt = clock.getDelta();
       if (V.ready && !V.live){
         const mp = V.moveEl || (V.moveEl = document.getElementById('move-pick'));
-        const animateActive = !!(mp && mp.offsetParent);   // Animate sub-tab visible
+        const au = V.authorEl || (V.authorEl = document.getElementById('reachy-author'));
+        const playActive = !!((mp && mp.offsetParent) || (au && au.offsetParent));  // Animate or Author tab
         if (V.joy.on && V.joy.phase === 'control'){
           driveSim(V.joy.tgt);                      // sim free-control: IK -> full rig, every frame
-        } else if (V.traj && !V.joy.on && animateActive){
+        } else if (V.traj && !V.joy.on && playActive){
           // drive playback on its own clock (NOT slaved to audio.currentTime — that freezes the
           // move at frame 0 whenever audio stalls / has no device). Audio plays alongside, best-effort.
           if (V.playing){

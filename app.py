@@ -18,7 +18,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
 
 import gradio as gr  # noqa: E402
 
+from reachy_motion import anim  # noqa: E402
 from reachy_motion import audio_monitor  # noqa: E402
+from reachy_motion import behaviors_store  # noqa: E402
 from reachy_motion import conversation as convo  # noqa: E402
 from reachy_motion import dataset as ds  # noqa: E402
 from reachy_motion import daemon_control  # noqa: E402
@@ -166,6 +168,107 @@ def on_enter_activity(connected: bool):
         controller.set_mode(False, False)
         return gr.update(value=False), gr.update(value=False)  # clear hand-guide/compliant
     return gr.update(), gr.update()
+
+
+# ===== Animation authoring (simulator-only: previews via the 3D viewer, never the robot) =====
+# Editable columns of the segment table: duration + ease + the expressive channels.
+# (x,y head-shift are omitted from the table — rarely used; kept 0 in the spec.)
+EDIT_CH = ("z", "roll", "pitch", "yaw", "antL", "antR", "body")
+SEG_COLS = ["dur", "ease"] + list(EDIT_CH)
+SEG_TYPES = ["number", "str"] + ["number"] * len(EDIT_CH)
+EASE_HINT = "ease: " + ", ".join(anim.EASES.keys())
+
+
+def _rows(df):
+    if df is None:
+        return []
+    if hasattr(df, "values"):
+        return df.values.tolist()
+    return list(df)
+
+
+def _spec_from_ui(df, layers) -> dict:
+    segs = []
+    for r in _rows(df):
+        if r is None or r[0] in (None, ""):
+            continue
+        try:
+            dur = float(r[0])
+        except (TypeError, ValueError):
+            continue
+        ease = str(r[1] or "smooth").strip()
+        pose = {c: 0.0 for c in anim.CHANNELS}
+        for i, c in enumerate(EDIT_CH):
+            try:
+                pose[c] = float(r[2 + i] or 0.0)
+            except (TypeError, ValueError):
+                pose[c] = 0.0
+        segs.append({"dur": dur, "ease": ease, "pose": pose})
+    return {"fps": anim.FPS, "segments": segs,
+            "layers": [{"type": l} for l in (layers or [])]}
+
+
+def _ui_from_spec(spec: dict):
+    rows = []
+    for seg in spec.get("segments", []):
+        p = seg.get("pose", {})
+        rows.append([seg.get("dur", 0.5), seg.get("ease", "smooth")]
+                    + [round(float(p.get(c, 0.0)), 2) for c in EDIT_CH])
+    layers = [l["type"] for l in spec.get("layers", []) if l.get("type") in anim.LAYERS]
+    return rows, layers
+
+
+def _bake_to_traj(spec: dict) -> str:
+    try:
+        if not spec.get("segments"):
+            return ""
+        return json.dumps(anim.bake_spec(spec))
+    except Exception as e:  # noqa: BLE001
+        print(f"[author] bake error: {e}")
+        return ""
+
+
+def author_preview(df, layers):
+    return _bake_to_traj(_spec_from_ui(df, layers))
+
+
+def author_pick(name):
+    spec = behaviors_store.get(name)
+    if not spec:
+        return gr.update(), gr.update(), gr.update(), gr.update()
+    rows, layers = _ui_from_spec(spec)
+    return name, rows, layers, _bake_to_traj(spec)
+
+
+def author_new():
+    rows = [[0.3, "ease_out"] + [0.0] * len(EDIT_CH),
+            [0.5, "back"] + [0.0] * len(EDIT_CH)]
+    return "new behavior", rows, [], ""
+
+
+def author_add_segment(df):
+    rows = _rows(df)
+    prev = rows[-1] if rows else ([0.4, "smooth"] + [0.0] * len(EDIT_CH))
+    rows.append([0.4, "smooth"] + list(prev[2:2 + len(EDIT_CH)]))  # carry the last pose forward
+    return rows
+
+
+def author_save(name, df, layers):
+    name = (name or "").strip() or behaviors_store.unique_name()
+    behaviors_store.save(name, _spec_from_ui(df, layers))
+    return gr.update(choices=behaviors_store.list_behaviors(), value=name), f"💾 saved **{name}**"
+
+
+def author_duplicate(name, df, layers):
+    new = behaviors_store.unique_name(f"{(name or 'behavior').strip()} copy")
+    behaviors_store.save(new, _spec_from_ui(df, layers))
+    return gr.update(choices=behaviors_store.list_behaviors(), value=new), new, f"⧉ duplicated to **{new}**"
+
+
+def author_delete(name):
+    if name:
+        behaviors_store.delete(name)
+    return gr.update(choices=behaviors_store.list_behaviors(), value=None), "🗑 deleted"
 
 
 _FREE_MSG = "🖐️ **Hand-guide · free** — easiest to move by hand; the viewer mirrors."
@@ -330,6 +433,33 @@ body.reachy-connected h1 { color:#fb923c !important; }
                 voice_btn = gr.Button("voice", elem_id="voice-set-btn", elem_classes=["reachy-hidden"])
                 gr.HTML(CHART_HTML)
 
+        # ===== Authoring (full width, below the viewer): create & edit animations =====
+        # Simulator-only: previews play in the 3D viewer above while this is expanded.
+        with gr.Accordion("✏️ Author — create & edit animations (simulator preview)", open=False):
+            gr.HTML('<div id="reachy-author"></div>')   # marker for the viewer's playback gate
+            gr.Markdown("Pick a **Behavior** to view/edit (or **New**). Each row = ease to that pose "
+                        "over `dur` s; edits **preview live** in the viewer above (looping). **Save** to keep it.")
+            with gr.Row():
+                behavior_dd = gr.Dropdown(behaviors_store.list_behaviors(), value=None,
+                                          label="Behavior", filterable=True, scale=3)
+                name_tb = gr.Textbox(label="Name", scale=3)
+                new_btn = gr.Button("➕ New", scale=1, min_width=64)
+                dup_btn = gr.Button("⧉ Dup", scale=1, min_width=64)
+                del_btn2 = gr.Button("🗑", scale=0, min_width=44)
+            seg_df = gr.Dataframe(
+                headers=SEG_COLS, datatype=SEG_TYPES, column_count=(len(SEG_COLS), "fixed"),
+                row_count=(1, "dynamic"), interactive=True, wrap=True,
+                label="Segments — each eases to this pose over `dur` seconds (degrees / mm)")
+            with gr.Row():
+                layers_chk = gr.CheckboxGroup(["breath", "ear_idle"], value=[],
+                                              label="Life layers", scale=3)
+                preview_btn = gr.Button("▶ Preview", variant="primary", scale=1)
+                addseg_btn = gr.Button("➕ Segment", scale=1)
+                save_btn = gr.Button("💾 Save", scale=1)
+            gr.Markdown(f"<span style='font-size:11px;opacity:0.6'>{EASE_HINT} · "
+                        f"channels: z(mm) · roll/pitch/yaw(deg) · antL/antR=ears(deg) · body(deg)</span>")
+            author_msg = gr.Markdown()
+
         # mode tabs: Simulator (off-robot) <-> Connected (live robot + dark-orange theme)
         mode_out = [connected, status, hand_guide_chk, compliant_chk]
         sim_tab.select(go_simulator, None, mode_out).then(
@@ -369,6 +499,17 @@ body.reachy-connected h1 { color:#fb923c !important; }
         # push trajectory to the three.js viewer whenever it changes
         traj.change(None, inputs=traj, outputs=None, js="(t) => window.ReachyViewer.playMove(t)")
         picker.change(select_move, inputs=[picker, connected], outputs=[traj, info])
+
+        # --- authoring (simulator-only): edits bake -> traj -> viewer.playMove ---
+        behavior_dd.change(author_pick, behavior_dd, [name_tb, seg_df, layers_chk, traj])
+        seg_df.change(author_preview, [seg_df, layers_chk], traj)
+        layers_chk.change(author_preview, [seg_df, layers_chk], traj)
+        preview_btn.click(author_preview, [seg_df, layers_chk], traj)
+        addseg_btn.click(author_add_segment, seg_df, seg_df)
+        new_btn.click(author_new, None, [name_tb, seg_df, layers_chk, traj])
+        save_btn.click(author_save, [name_tb, seg_df, layers_chk], [behavior_dd, author_msg])
+        dup_btn.click(author_duplicate, [name_tb, seg_df, layers_chk], [behavior_dd, name_tb, author_msg])
+        del_btn2.click(author_delete, behavior_dd, [behavior_dd, author_msg])
         # no auto-load: the dropdown starts empty and the viewer shows a static neutral pose
     return demo
 
@@ -383,6 +524,6 @@ if __name__ == "__main__":
     if sample_wav is not None:
         allowed.append(str(Path(sample_wav).resolve().parent))
     build().launch(
-        server_name="127.0.0.1", server_port=port,
+        server_name=os.environ.get("GRADIO_SERVER_NAME", "127.0.0.1"), server_port=port,
         theme=gr.themes.Soft(), allowed_paths=allowed,
     )
