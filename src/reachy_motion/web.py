@@ -239,6 +239,30 @@ POSE_PANEL_HTML = f"""
 </div>
 """
 
+SOUND_LAB_HTML = """
+<div id="soundlab" style="display:flex;flex-direction:column;gap:10px">
+  <div style="display:flex;align-items:center;gap:8px">
+    <button id="sl-play" type="button" style="padding:5px 16px;border-radius:6px;cursor:pointer;background:#2563eb;color:#fff;border:none;font-weight:600">▶ Play</button>
+    <button id="sl-loop" type="button" style="padding:5px 12px;border-radius:6px;cursor:pointer;background:rgba(255,255,255,0.08);color:#fff;border:none">⟳ Loop</button>
+    <button id="sl-stop" type="button" style="padding:5px 12px;border-radius:6px;cursor:pointer;background:rgba(255,255,255,0.08);color:#fff;border:none">⏹</button>
+    <span style="font-size:12px;opacity:0.55">instant browser preview · 📢 plays on the robot below</span>
+  </div>
+  <div id="sl-wave" style="width:100%;height:70px;background:rgba(255,255,255,0.03);border-radius:6px"></div>
+  <div style="font-size:12px;opacity:0.7">Pitch contour (the melody) — <b>drag</b> a dot up/down · <b>double-click</b> to add · <b>right-click</b> to remove</div>
+  <div id="sl-contour" style="width:100%;height:150px;background:rgba(255,255,255,0.03);border-radius:8px"></div>
+  <div style="display:flex;gap:22px;align-items:flex-start;flex-wrap:wrap">
+    <div style="display:flex;flex-direction:column;gap:3px">
+      <span style="font-size:11px;opacity:0.7">Voice (drag knobs ↕)</span>
+      <div id="sl-knobs" style="display:flex;gap:12px"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:3px">
+      <div id="sl-formants" style="width:130px;height:130px"></div>
+      <span style="font-size:11px;opacity:0.7">Formants (timbre)</span>
+    </div>
+  </div>
+</div>
+"""
+
 TIMELINE_HTML = """
 <div style="display:flex;flex-direction:column;gap:4px;margin-top:6px">
   <div style="font-size:13px;font-weight:600;opacity:0.85">Timeline — keyframes (tap to edit · ✕ to remove)</div>

@@ -19,12 +19,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
 import gradio as gr  # noqa: E402
 
 from reachy_motion import anim  # noqa: E402
+from reachy_motion import audio  # noqa: E402
 from reachy_motion import audio_monitor  # noqa: E402
 from reachy_motion import behaviors_store  # noqa: E402
 from reachy_motion import conversation as convo  # noqa: E402
 from reachy_motion import dataset as ds  # noqa: E402
 from reachy_motion import daemon_control  # noqa: E402
 from reachy_motion import poses  # noqa: E402
+from reachy_motion import sound  # noqa: E402
 from reachy_motion import transcribe  # noqa: E402
 from reachy_motion import tts  # noqa: E402
 from reachy_motion.robot_control import RobotController  # noqa: E402
@@ -36,6 +38,7 @@ from reachy_motion.web import (  # noqa: E402
     GAMEPAD_HTML,
     HEAD_HTML,
     POSE_PANEL_HTML,
+    SOUND_LAB_HTML,
     TIMELINE_HTML,
     move_trajectory,
     pose_to_goto,
@@ -56,6 +59,7 @@ IK_WASM_URL = f"/gradio_api/file={(WEB_ROOT / 'kin' / 'reachy_mini_rust_kinemati
 IK_DATA_URL = f"/gradio_api/file={(WEB_ROOT / 'kin' / 'kinematics_data.json').resolve()}"
 GSTWEBRTC_URL = f"/gradio_api/file={(WEB_ROOT / 'gstwebrtc-api.js').resolve()}"
 VIEWER_JS_URL = f"/gradio_api/file={(WEB_ROOT / 'viewer.js').resolve()}"  # the Three.js viewer (was inline)
+SOUND_JS_URL = f"/gradio_api/file={(WEB_ROOT / 'sound.js').resolve()}"    # the Web Audio sound lab
 
 
 def _info_md(name: str) -> str:
@@ -292,6 +296,51 @@ def author_duplicate(payload):
     return gr.update(choices=behaviors_store.list_behaviors(), value=new), new, f"⧉ duplicated to **{new}**"
 
 
+# ===== Sound lab: a client-side Web Audio synth + DAW rack (sound.js); the server only
+# loads a preset's spec into the browser, plays the live spec on the robot, and saves it. =====
+SOUND_PRESETS = sound.names()
+
+
+def sound_spec_of(name: str) -> str:
+    """Push a preset/library spec to the browser editor (sound.js loadSpec)."""
+    if not name:
+        return ""
+    return json.dumps(sound.get(name).spec())
+
+
+def play_spec_on_robot(spec_json: str) -> str:
+    """Bake the browser's live spec and play it on Reachy's speaker (direct ALSA, non-blocking)."""
+    import tempfile
+    try:
+        spec = json.loads(spec_json) if spec_json else None
+    except Exception:  # noqa: BLE001
+        spec = None
+    if not spec or not spec.get("segments"):
+        return "⚠️ pick a sound first"
+    x = sound.bake_spec(spec)
+    f = tempfile.NamedTemporaryFile(suffix=".wav", delete=False); f.close()
+    sound.save_wav(x, int(spec.get("sr", sound.SR)), f.name)
+    try:
+        audio.play_wav(f.name, blocking=False)
+    except Exception as e:  # noqa: BLE001
+        return f"⚠️ {e}"
+    return "📢 playing on the robot"
+
+
+def save_sound(payload: str):
+    """Save the edited spec into the library (js sends {name, spec})."""
+    try:
+        d = json.loads(payload) if payload else {}
+        spec = json.loads(d["spec"]) if isinstance(d.get("spec"), str) else d.get("spec")
+    except Exception:  # noqa: BLE001
+        d, spec = {}, None
+    name = (d.get("name") or "").strip()
+    if not name or not spec or not spec.get("segments"):
+        return gr.update(), "⚠️ name it and add some pitch first"
+    sound.save_to_library(name, spec)
+    return gr.update(choices=sound.names(), value=name), f"💾 saved **{name}**"
+
+
 def author_delete(name):
     if name:
         behaviors_store.delete(name)
@@ -383,8 +432,9 @@ def build() -> gr.Blocks:
         f"window.REACHY_READY={json.dumps(ready_render())};</script>\n"
         f'<script src="{GSTWEBRTC_URL}"></script>\n'        # robot camera (WebRTC consumer)
         + HEAD_HTML                                          # three.js importmap (must be inline)
-        # cache-bust the module by file mtime so viewer.js edits always reload (it's a fixed URL)
+        # cache-bust the modules by file mtime so JS edits always reload (fixed URLs)
         + f'\n<script type="module" src="{VIEWER_JS_URL}?_v={int((WEB_ROOT / "viewer.js").stat().st_mtime)}"></script>'
+        + f'\n<script src="{SOUND_JS_URL}?_v={int((WEB_ROOT / "sound.js").stat().st_mtime)}"></script>'
     )
     css = """
 /* dark-orange theme when controlling the real robot */
@@ -504,6 +554,18 @@ button.maintab.tab-active { color:#fff !important; border-bottom-color:#3b82f6 !
             gr.HTML(TIMELINE_HTML)   # keyframe chips (driven by viewer.js)
             gr.HTML('<div id="author-chart-slot"></div>')   # channels viewer at the bottom
 
+            # ----- Sound lab: a Web Audio synth + DAW rack (sound.js); server loads/plays/saves -----
+            with gr.Accordion("🔊 Sound — design the robot's voice", open=False):
+                with gr.Row():
+                    snd_preset = gr.Dropdown(SOUND_PRESETS, value="curious", label="Sound", filterable=True, scale=3)
+                    snd_name = gr.Textbox(label="Save as", scale=2, elem_id="sl-name")
+                    snd_robot = gr.Button("📢 On robot", scale=1)
+                    snd_save = gr.Button("💾 Save", scale=1)
+                gr.HTML(SOUND_LAB_HTML)   # contour editor + knobs + XY pad + transport (driven by sound.js)
+                snd_spec_in = gr.Textbox(visible=False)    # server -> JS: load a spec into the editor
+                snd_spec_out = gr.Textbox(visible=False)   # JS -> server: the live spec for On robot / Save
+                snd_msg = gr.Markdown()
+
         # mode tabs: Simulator (off-robot) <-> Connected (live robot + dark-orange theme)
         mode_out = [connected, status, hand_guide_chk, compliant_chk]
         sim_tab.select(go_simulator, None, mode_out).then(
@@ -586,6 +648,16 @@ button.maintab.tab-active { color:#fff !important; border-bottom-color:#3b82f6 !
         save_btn.click(author_save, author_save_in, [behavior_dd, author_msg], js=_pack_js)
         dup_btn.click(author_duplicate, author_save_in, [behavior_dd, name_tb, author_msg], js=_pack_js)
         del_btn2.click(author_delete, behavior_dd, [behavior_dd, author_msg])
+
+        # sound lab (client-side synth): pick a sound -> push its spec to the browser editor;
+        # On robot / Save send the browser's live spec back to the server.
+        snd_preset.change(sound_spec_of, snd_preset, snd_spec_in, show_progress="hidden")
+        snd_spec_in.change(None, snd_spec_in, None, js="(s) => window.SoundLab.loadSpec(s)")
+        snd_robot.click(play_spec_on_robot, snd_spec_out, snd_msg,
+                        js="() => window.SoundLab.getSpec()", show_progress="hidden")
+        snd_save.click(save_sound, snd_spec_out, [snd_preset, snd_msg], show_progress="hidden",
+                       js="() => JSON.stringify({name: (document.querySelector('#sl-name textarea,#sl-name input')||{}).value||'', spec: window.SoundLab.getSpec()})")
+        demo.load(sound_spec_of, snd_preset, snd_spec_in)   # populate the editor with the default sound
         # no auto-load: the dropdown starts empty and the viewer shows a static neutral pose
     return demo
 

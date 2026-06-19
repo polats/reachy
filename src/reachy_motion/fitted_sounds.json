@@ -1,0 +1,7127 @@
+{
+ "amazed": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 1.18,
+   "formants": [
+    560,
+    2400
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.0,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 454.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 454.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 454.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 529.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 612.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 612.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 604.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 577.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 536.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 488.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 710.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   }
+  ]
+ },
+ "anxiety": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 1.06,
+   "formants": [
+    620,
+    2500
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.0,
+   "vib_rate": 6.0,
+   "vib_depth": 0.045
+  },
+  "segments": [
+   {
+    "f0": 551.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.045,
+    "rasp": 0.0
+   },
+   {
+    "f0": 551.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.045,
+    "rasp": 0.0
+   },
+   {
+    "f0": 588.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.045,
+    "rasp": 0.0
+   },
+   {
+    "f0": 588.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.045,
+    "rasp": 0.0
+   },
+   {
+    "f0": 621.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.045,
+    "rasp": 0.0
+   },
+   {
+    "f0": 610.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.045,
+    "rasp": 0.0
+   },
+   {
+    "f0": 599.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.045,
+    "rasp": 0.0
+   },
+   {
+    "f0": 678.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.045,
+    "rasp": 0.0
+   },
+   {
+    "f0": 612.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.045,
+    "rasp": 0.0
+   },
+   {
+    "f0": 649.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.045,
+    "rasp": 0.0
+   },
+   {
+    "f0": 630.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.045,
+    "rasp": 0.0
+   },
+   {
+    "f0": 558.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.045,
+    "rasp": 0.0
+   }
+  ]
+ },
+ "attentive": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 0.92,
+   "formants": [
+    660,
+    2860
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.0,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 525.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 531.9,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 545.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 651.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 634.9,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 651.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 668.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 684.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 708.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 713.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 647.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 668.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   }
+  ]
+ },
+ "boredom": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 0.6,
+   "formants": [
+    580,
+    1160
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.55,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 816.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.55
+   },
+   {
+    "f0": 816.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.55
+   },
+   {
+    "f0": 476.9,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.55
+   },
+   {
+    "f0": 664.9,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.55
+   },
+   {
+    "f0": 320.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.55
+   },
+   {
+    "f0": 681.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.55
+   },
+   {
+    "f0": 544.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.55
+   },
+   {
+    "f0": 623.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.55
+   },
+   {
+    "f0": 246.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.55
+   },
+   {
+    "f0": 619.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.55
+   },
+   {
+    "f0": 816.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.55
+   },
+   {
+    "f0": 816.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.55
+   }
+  ]
+ },
+ "calming": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 1.1,
+   "formants": [
+    660,
+    2760
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.0,
+   "vib_rate": 6.0,
+   "vib_depth": 0.046
+  },
+  "segments": [
+   {
+    "f0": 595.9,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.046,
+    "rasp": 0.0
+   },
+   {
+    "f0": 595.9,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.046,
+    "rasp": 0.0
+   },
+   {
+    "f0": 595.9,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.046,
+    "rasp": 0.0
+   },
+   {
+    "f0": 866.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.046,
+    "rasp": 0.0
+   },
+   {
+    "f0": 613.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.046,
+    "rasp": 0.0
+   },
+   {
+    "f0": 711.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.046,
+    "rasp": 0.0
+   },
+   {
+    "f0": 618.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.046,
+    "rasp": 0.0
+   },
+   {
+    "f0": 683.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.046,
+    "rasp": 0.0
+   },
+   {
+    "f0": 555.9,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.046,
+    "rasp": 0.0
+   },
+   {
+    "f0": 639.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.046,
+    "rasp": 0.0
+   },
+   {
+    "f0": 621.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.046,
+    "rasp": 0.0
+   },
+   {
+    "f0": 551.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.046,
+    "rasp": 0.0
+   }
+  ]
+ },
+ "cheerful": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 1.13,
+   "formants": [
+    620,
+    780
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.0,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 711.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 711.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 711.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 765.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 835.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 735.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 628.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 565.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 565.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 572.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 623.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 773.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   }
+  ]
+ },
+ "come": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 0.6,
+   "formants": [
+    480,
+    2940
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.413,
+   "vib_rate": 6.0,
+   "vib_depth": 0.015
+  },
+  "segments": [
+   {
+    "f0": 500.0,
+    "dur": 0.178,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.015,
+    "rasp": 0.413
+   },
+   {
+    "f0": 500.0,
+    "dur": 0.178,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.015,
+    "rasp": 0.413
+   },
+   {
+    "f0": 500.0,
+    "dur": 0.178,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.015,
+    "rasp": 0.413
+   },
+   {
+    "f0": 500.0,
+    "dur": 0.178,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.015,
+    "rasp": 0.413
+   },
+   {
+    "f0": 500.0,
+    "dur": 0.178,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.015,
+    "rasp": 0.413
+   },
+   {
+    "f0": 500.0,
+    "dur": 0.178,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.015,
+    "rasp": 0.413
+   },
+   {
+    "f0": 500.0,
+    "dur": 0.178,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.015,
+    "rasp": 0.413
+   },
+   {
+    "f0": 500.0,
+    "dur": 0.178,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.015,
+    "rasp": 0.413
+   },
+   {
+    "f0": 500.0,
+    "dur": 0.178,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.015,
+    "rasp": 0.413
+   },
+   {
+    "f0": 500.0,
+    "dur": 0.178,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.015,
+    "rasp": 0.413
+   },
+   {
+    "f0": 500.0,
+    "dur": 0.178,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.015,
+    "rasp": 0.413
+   },
+   {
+    "f0": 500.0,
+    "dur": 0.178,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.015,
+    "rasp": 0.413
+   }
+  ]
+ },
+ "confused": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 1.04,
+   "formants": [
+    480,
+    2920
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.057,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 416.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.057
+   },
+   {
+    "f0": 416.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.057
+   },
+   {
+    "f0": 416.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.057
+   },
+   {
+    "f0": 436.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.057
+   },
+   {
+    "f0": 428.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.057
+   },
+   {
+    "f0": 449.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.057
+   },
+   {
+    "f0": 473.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.057
+   },
+   {
+    "f0": 475.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.057
+   },
+   {
+    "f0": 481.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.057
+   },
+   {
+    "f0": 537.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.057
+   },
+   {
+    "f0": 484.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.057
+   },
+   {
+    "f0": 454.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.057
+   }
+  ]
+ },
+ "contempt": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 0.61,
+   "formants": [
+    500,
+    740
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.28,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.28
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.28
+   },
+   {
+    "f0": 598.9,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.28
+   },
+   {
+    "f0": 403.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.28
+   },
+   {
+    "f0": 588.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.28
+   },
+   {
+    "f0": 442.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.28
+   },
+   {
+    "f0": 303.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.28
+   },
+   {
+    "f0": 212.9,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.28
+   },
+   {
+    "f0": 794.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.28
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.28
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.28
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.28
+   }
+  ]
+ },
+ "curious": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 0.97,
+   "formants": [
+    700,
+    780
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.083,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 484.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.083
+   },
+   {
+    "f0": 484.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.083
+   },
+   {
+    "f0": 491.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.083
+   },
+   {
+    "f0": 538.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.083
+   },
+   {
+    "f0": 551.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.083
+   },
+   {
+    "f0": 655.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.083
+   },
+   {
+    "f0": 795.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.083
+   },
+   {
+    "f0": 595.9,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.083
+   },
+   {
+    "f0": 595.9,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.083
+   },
+   {
+    "f0": 595.9,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.083
+   },
+   {
+    "f0": 813.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.083
+   },
+   {
+    "f0": 689.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.083
+   }
+  ]
+ },
+ "dance": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 0.6,
+   "formants": [
+    440,
+    820
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.55,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 639.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.55
+   },
+   {
+    "f0": 439.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.55
+   },
+   {
+    "f0": 400.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.55
+   },
+   {
+    "f0": 409.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.55
+   },
+   {
+    "f0": 592.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.55
+   },
+   {
+    "f0": 425.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.55
+   },
+   {
+    "f0": 499.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.55
+   },
+   {
+    "f0": 454.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.55
+   },
+   {
+    "f0": 406.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.55
+   },
+   {
+    "f0": 408.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.55
+   },
+   {
+    "f0": 380.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.55
+   },
+   {
+    "f0": 604.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.55
+   }
+  ]
+ },
+ "disgusted": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 1.21,
+   "formants": [
+    500,
+    1960
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.001,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 428.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.001
+   },
+   {
+    "f0": 428.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.001
+   },
+   {
+    "f0": 428.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.001
+   },
+   {
+    "f0": 451.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.001
+   },
+   {
+    "f0": 565.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.001
+   },
+   {
+    "f0": 477.9,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.001
+   },
+   {
+    "f0": 484.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.001
+   },
+   {
+    "f0": 518.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.001
+   },
+   {
+    "f0": 474.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.001
+   },
+   {
+    "f0": 490.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.001
+   },
+   {
+    "f0": 479.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.001
+   },
+   {
+    "f0": 441.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.001
+   }
+  ]
+ },
+ "displeased": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 0.88,
+   "formants": [
+    500,
+    760
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.0,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 728.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 269.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 198.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 267.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 267.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 699.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 864.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   }
+  ]
+ },
+ "downcast": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 1.21,
+   "formants": [
+    580,
+    2400
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.044,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 588.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.044
+   },
+   {
+    "f0": 588.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.044
+   },
+   {
+    "f0": 588.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.044
+   },
+   {
+    "f0": 604.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.044
+   },
+   {
+    "f0": 612.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.044
+   },
+   {
+    "f0": 612.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.044
+   },
+   {
+    "f0": 588.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.044
+   },
+   {
+    "f0": 565.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.044
+   },
+   {
+    "f0": 544.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.044
+   },
+   {
+    "f0": 537.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.044
+   },
+   {
+    "f0": 537.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.044
+   },
+   {
+    "f0": 506.9,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.044
+   }
+  ]
+ },
+ "dying": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 0.6,
+   "formants": [
+    720,
+    2660
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.297,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 747.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.297
+   },
+   {
+    "f0": 657.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.297
+   },
+   {
+    "f0": 235.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.297
+   },
+   {
+    "f0": 251.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.297
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.297
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.297
+   },
+   {
+    "f0": 864.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.297
+   },
+   {
+    "f0": 150.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.297
+   },
+   {
+    "f0": 664.9,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.297
+   },
+   {
+    "f0": 530.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.297
+   },
+   {
+    "f0": 660.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.297
+   },
+   {
+    "f0": 668.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.297
+   }
+  ]
+ },
+ "electric": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 0.97,
+   "formants": [
+    480,
+    820
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.0,
+   "vib_rate": 6.0,
+   "vib_depth": 0.045
+  },
+  "segments": [
+   {
+    "f0": 350.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.045,
+    "rasp": 0.0
+   },
+   {
+    "f0": 350.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.045,
+    "rasp": 0.0
+   },
+   {
+    "f0": 397.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.045,
+    "rasp": 0.0
+   },
+   {
+    "f0": 423.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.045,
+    "rasp": 0.0
+   },
+   {
+    "f0": 445.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.045,
+    "rasp": 0.0
+   },
+   {
+    "f0": 442.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.045,
+    "rasp": 0.0
+   },
+   {
+    "f0": 537.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.045,
+    "rasp": 0.0
+   },
+   {
+    "f0": 773.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.045,
+    "rasp": 0.0
+   },
+   {
+    "f0": 832.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.045,
+    "rasp": 0.0
+   },
+   {
+    "f0": 807.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.045,
+    "rasp": 0.0
+   },
+   {
+    "f0": 747.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.045,
+    "rasp": 0.0
+   },
+   {
+    "f0": 408.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.045,
+    "rasp": 0.0
+   }
+  ]
+ },
+ "enthusiastic": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 0.92,
+   "formants": [
+    840,
+    1720
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.0,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 700.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 700.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 704.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 721.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 744.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 849.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 787.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   }
+  ]
+ },
+ "exhausted": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 0.78,
+   "formants": [
+    560,
+    2360
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.0,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 588.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 604.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 518.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 773.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 796.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 565.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 552.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 789.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 309.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 543.9,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 698.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   }
+  ]
+ },
+ "fear": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 1.0,
+   "formants": [
+    680,
+    1420
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.0,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 355.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 355.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 355.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 355.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 355.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 396.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 719.9,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 723.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 680.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 668.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 672.9,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 165.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   }
+  ]
+ },
+ "frustrated": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 1.16,
+   "formants": [
+    560,
+    2500
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.0,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 604.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 604.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 626.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 607.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 520.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 537.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 553.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 495.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 512.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 477.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 479.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 428.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   }
+  ]
+ },
+ "furious": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 1.04,
+   "formants": [
+    500,
+    2220
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.051,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 428.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.051
+   },
+   {
+    "f0": 428.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.051
+   },
+   {
+    "f0": 428.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.051
+   },
+   {
+    "f0": 568.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.051
+   },
+   {
+    "f0": 502.9,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.051
+   },
+   {
+    "f0": 511.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.051
+   },
+   {
+    "f0": 538.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.051
+   },
+   {
+    "f0": 518.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.051
+   },
+   {
+    "f0": 495.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.051
+   },
+   {
+    "f0": 544.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.051
+   },
+   {
+    "f0": 469.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.051
+   },
+   {
+    "f0": 420.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.051
+   }
+  ]
+ },
+ "go_away": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 1.17,
+   "formants": [
+    560,
+    2380
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.032,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 424.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.032
+   },
+   {
+    "f0": 424.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.032
+   },
+   {
+    "f0": 424.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.032
+   },
+   {
+    "f0": 424.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.032
+   },
+   {
+    "f0": 558.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.032
+   },
+   {
+    "f0": 525.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.032
+   },
+   {
+    "f0": 558.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.032
+   },
+   {
+    "f0": 531.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.032
+   },
+   {
+    "f0": 604.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.032
+   },
+   {
+    "f0": 612.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.032
+   },
+   {
+    "f0": 565.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.032
+   },
+   {
+    "f0": 464.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.032
+   }
+  ]
+ },
+ "grateful": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 1.01,
+   "formants": [
+    420,
+    700
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.0,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 445.5,
+    "dur": 0.242,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 445.5,
+    "dur": 0.242,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 445.5,
+    "dur": 0.242,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 445.5,
+    "dur": 0.242,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 451.8,
+    "dur": 0.242,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 646.8,
+    "dur": 0.242,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 586.0,
+    "dur": 0.242,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 397.0,
+    "dur": 0.242,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 383.5,
+    "dur": 0.242,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 375.2,
+    "dur": 0.242,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 372.6,
+    "dur": 0.242,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 373.7,
+    "dur": 0.242,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   }
+  ]
+ },
+ "helpful": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 1.18,
+   "formants": [
+    640,
+    2500
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.081,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 518.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.081
+   },
+   {
+    "f0": 518.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.081
+   },
+   {
+    "f0": 518.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.081
+   },
+   {
+    "f0": 518.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.081
+   },
+   {
+    "f0": 637.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.081
+   },
+   {
+    "f0": 627.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.081
+   },
+   {
+    "f0": 700.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.081
+   },
+   {
+    "f0": 500.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.081
+   },
+   {
+    "f0": 691.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.081
+   },
+   {
+    "f0": 866.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.081
+   },
+   {
+    "f0": 573.9,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.081
+   },
+   {
+    "f0": 612.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.081
+   }
+  ]
+ },
+ "impatient": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 1.0,
+   "formants": [
+    620,
+    2380
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.0,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 639.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 639.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 639.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 639.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 639.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 639.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 639.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 665.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 592.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 588.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 588.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 551.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   }
+  ]
+ },
+ "incomprehensible": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 1.15,
+   "formants": [
+    680,
+    2520
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.12,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 537.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.12
+   },
+   {
+    "f0": 537.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.12
+   },
+   {
+    "f0": 537.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.12
+   },
+   {
+    "f0": 537.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.12
+   },
+   {
+    "f0": 537.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.12
+   },
+   {
+    "f0": 537.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.12
+   },
+   {
+    "f0": 537.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.12
+   },
+   {
+    "f0": 537.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.12
+   },
+   {
+    "f0": 537.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.12
+   },
+   {
+    "f0": 594.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.12
+   },
+   {
+    "f0": 698.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.12
+   },
+   {
+    "f0": 735.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.12
+   }
+  ]
+ },
+ "indifferent": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 1.02,
+   "formants": [
+    700,
+    2980
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.121,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 723.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.121
+   },
+   {
+    "f0": 723.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.121
+   },
+   {
+    "f0": 723.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.121
+   },
+   {
+    "f0": 723.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.121
+   },
+   {
+    "f0": 723.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.121
+   },
+   {
+    "f0": 723.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.121
+   },
+   {
+    "f0": 723.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.121
+   },
+   {
+    "f0": 723.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.121
+   },
+   {
+    "f0": 723.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.121
+   },
+   {
+    "f0": 735.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.121
+   },
+   {
+    "f0": 665.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.121
+   },
+   {
+    "f0": 630.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.121
+   }
+  ]
+ },
+ "inquiring": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 1.03,
+   "formants": [
+    720,
+    820
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.119,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 604.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.119
+   },
+   {
+    "f0": 604.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.119
+   },
+   {
+    "f0": 604.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.119
+   },
+   {
+    "f0": 604.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.119
+   },
+   {
+    "f0": 604.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.119
+   },
+   {
+    "f0": 604.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.119
+   },
+   {
+    "f0": 604.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.119
+   },
+   {
+    "f0": 604.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.119
+   },
+   {
+    "f0": 604.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.119
+   },
+   {
+    "f0": 653.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.119
+   },
+   {
+    "f0": 771.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.119
+   },
+   {
+    "f0": 848.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.119
+   }
+  ]
+ },
+ "irritated": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 0.9,
+   "formants": [
+    480,
+    580
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.0,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 630.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 634.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 439.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 445.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 436.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 429.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 412.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   }
+  ]
+ },
+ "laughing": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 1.13,
+   "formants": [
+    780,
+    1480
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.041,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 630.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.041
+   },
+   {
+    "f0": 630.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.041
+   },
+   {
+    "f0": 630.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.041
+   },
+   {
+    "f0": 630.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.041
+   },
+   {
+    "f0": 630.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.041
+   },
+   {
+    "f0": 789.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.041
+   },
+   {
+    "f0": 842.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.041
+   },
+   {
+    "f0": 816.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.041
+   },
+   {
+    "f0": 785.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.041
+   },
+   {
+    "f0": 731.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.041
+   },
+   {
+    "f0": 738.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.041
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.041
+   }
+  ]
+ },
+ "lonely": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 1.23,
+   "formants": [
+    660,
+    2500
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.0,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 490.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 490.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 490.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 530.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 617.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 566.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 598.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 644.9,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 674.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 627.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 747.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 604.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   }
+  ]
+ },
+ "lost": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 1.15,
+   "formants": [
+    620,
+    2600
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.08,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 512.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.08
+   },
+   {
+    "f0": 512.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.08
+   },
+   {
+    "f0": 598.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.08
+   },
+   {
+    "f0": 564.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.08
+   },
+   {
+    "f0": 631.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.08
+   },
+   {
+    "f0": 581.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.08
+   },
+   {
+    "f0": 629.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.08
+   },
+   {
+    "f0": 634.9,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.08
+   },
+   {
+    "f0": 659.9,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.08
+   },
+   {
+    "f0": 773.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.08
+   },
+   {
+    "f0": 646.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.08
+   },
+   {
+    "f0": 572.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.08
+   }
+  ]
+ },
+ "loving": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 1.13,
+   "formants": [
+    800,
+    1600
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.043,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 787.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.043
+   },
+   {
+    "f0": 787.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.043
+   },
+   {
+    "f0": 787.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.043
+   },
+   {
+    "f0": 787.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.043
+   },
+   {
+    "f0": 787.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.043
+   },
+   {
+    "f0": 819.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.043
+   },
+   {
+    "f0": 787.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.043
+   },
+   {
+    "f0": 839.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.043
+   },
+   {
+    "f0": 816.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.043
+   },
+   {
+    "f0": 787.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.043
+   },
+   {
+    "f0": 760.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.043
+   },
+   {
+    "f0": 700.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.043
+   }
+  ]
+ },
+ "no": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 0.82,
+   "formants": [
+    380,
+    760
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.249,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.249
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.249
+   },
+   {
+    "f0": 626.9,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.249
+   },
+   {
+    "f0": 348.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.249
+   },
+   {
+    "f0": 424.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.249
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.249
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.249
+   },
+   {
+    "f0": 878.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.249
+   },
+   {
+    "f0": 813.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.249
+   },
+   {
+    "f0": 835.9,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.249
+   },
+   {
+    "f0": 853.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.249
+   },
+   {
+    "f0": 864.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.249
+   }
+  ]
+ },
+ "no_excited": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 0.6,
+   "formants": [
+    380,
+    620
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.305,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 420.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.305
+   },
+   {
+    "f0": 420.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.305
+   },
+   {
+    "f0": 420.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.305
+   },
+   {
+    "f0": 420.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.305
+   },
+   {
+    "f0": 358.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.305
+   },
+   {
+    "f0": 353.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.305
+   },
+   {
+    "f0": 326.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.305
+   },
+   {
+    "f0": 321.9,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.305
+   },
+   {
+    "f0": 347.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.305
+   },
+   {
+    "f0": 339.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.305
+   },
+   {
+    "f0": 698.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.305
+   },
+   {
+    "f0": 370.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.305
+   }
+  ]
+ },
+ "no_sad": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 0.7,
+   "formants": [
+    460,
+    840
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.347,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.347
+   },
+   {
+    "f0": 856.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.347
+   },
+   {
+    "f0": 386.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.347
+   },
+   {
+    "f0": 300.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.347
+   },
+   {
+    "f0": 150.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.347
+   },
+   {
+    "f0": 308.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.347
+   },
+   {
+    "f0": 286.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.347
+   },
+   {
+    "f0": 250.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.347
+   },
+   {
+    "f0": 758.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.347
+   },
+   {
+    "f0": 508.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.347
+   },
+   {
+    "f0": 622.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.347
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.347
+   }
+  ]
+ },
+ "oops": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 0.91,
+   "formants": [
+    800,
+    1460
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.086,
+   "vib_rate": 6.0,
+   "vib_depth": 0.015
+  },
+  "segments": [
+   {
+    "f0": 604.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.015,
+    "rasp": 0.086
+   },
+   {
+    "f0": 604.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.015,
+    "rasp": 0.086
+   },
+   {
+    "f0": 604.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.015,
+    "rasp": 0.086
+   },
+   {
+    "f0": 604.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.015,
+    "rasp": 0.086
+   },
+   {
+    "f0": 604.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.015,
+    "rasp": 0.086
+   },
+   {
+    "f0": 604.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.015,
+    "rasp": 0.086
+   },
+   {
+    "f0": 604.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.015,
+    "rasp": 0.086
+   },
+   {
+    "f0": 604.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.015,
+    "rasp": 0.086
+   },
+   {
+    "f0": 604.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.015,
+    "rasp": 0.086
+   },
+   {
+    "f0": 604.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.015,
+    "rasp": 0.086
+   },
+   {
+    "f0": 721.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.015,
+    "rasp": 0.086
+   },
+   {
+    "f0": 747.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.015,
+    "rasp": 0.086
+   }
+  ]
+ },
+ "proud": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 0.69,
+   "formants": [
+    700,
+    2960
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.128,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 565.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.128
+   },
+   {
+    "f0": 565.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.128
+   },
+   {
+    "f0": 565.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.128
+   },
+   {
+    "f0": 565.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.128
+   },
+   {
+    "f0": 565.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.128
+   },
+   {
+    "f0": 565.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.128
+   },
+   {
+    "f0": 565.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.128
+   },
+   {
+    "f0": 565.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.128
+   },
+   {
+    "f0": 565.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.128
+   },
+   {
+    "f0": 565.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.128
+   },
+   {
+    "f0": 718.9,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.128
+   },
+   {
+    "f0": 678.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.128
+   }
+  ]
+ },
+ "rage": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 1.31,
+   "formants": [
+    560,
+    860
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.0,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 243.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 243.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 243.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 265.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 274.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 290.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 298.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 296.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 294.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 291.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 283.9,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 262.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   }
+  ]
+ },
+ "relief": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 0.98,
+   "formants": [
+    460,
+    1720
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.521,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 544.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.521
+   },
+   {
+    "f0": 544.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.521
+   },
+   {
+    "f0": 544.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.521
+   },
+   {
+    "f0": 544.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.521
+   },
+   {
+    "f0": 544.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.521
+   },
+   {
+    "f0": 544.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.521
+   },
+   {
+    "f0": 544.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.521
+   },
+   {
+    "f0": 544.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.521
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.521
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.521
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.521
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.521
+   }
+  ]
+ },
+ "reprimand": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 1.07,
+   "formants": [
+    500,
+    980
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.038,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 441.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.038
+   },
+   {
+    "f0": 436.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.038
+   },
+   {
+    "f0": 431.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.038
+   },
+   {
+    "f0": 426.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.038
+   },
+   {
+    "f0": 538.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.038
+   },
+   {
+    "f0": 520.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.038
+   },
+   {
+    "f0": 387.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.038
+   },
+   {
+    "f0": 334.9,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.038
+   },
+   {
+    "f0": 444.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.038
+   },
+   {
+    "f0": 221.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.038
+   },
+   {
+    "f0": 378.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.038
+   },
+   {
+    "f0": 484.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.038
+   }
+  ]
+ },
+ "resigned": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 1.09,
+   "formants": [
+    380,
+    760
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.0,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 216.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 216.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 216.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 216.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 216.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 216.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 216.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 208.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 150.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 194.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 190.9,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 164.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   }
+  ]
+ },
+ "sad": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 1.18,
+   "formants": [
+    420,
+    520
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.0,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 436.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 525.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 626.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 728.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 257.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 150.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 170.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 211.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 850.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 723.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 711.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 711.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   }
+  ]
+ },
+ "scared": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 0.88,
+   "formants": [
+    540,
+    980
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.401,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.401
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.401
+   },
+   {
+    "f0": 558.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.401
+   },
+   {
+    "f0": 545.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.401
+   },
+   {
+    "f0": 525.9,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.401
+   },
+   {
+    "f0": 431.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.401
+   },
+   {
+    "f0": 504.9,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.401
+   },
+   {
+    "f0": 584.9,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.401
+   },
+   {
+    "f0": 518.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.401
+   },
+   {
+    "f0": 844.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.401
+   },
+   {
+    "f0": 480.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.401
+   },
+   {
+    "f0": 816.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.401
+   }
+  ]
+ },
+ "serenity": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 0.6,
+   "formants": [
+    600,
+    940
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.265,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 304.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.265
+   },
+   {
+    "f0": 326.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.265
+   },
+   {
+    "f0": 326.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.265
+   },
+   {
+    "f0": 320.9,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.265
+   },
+   {
+    "f0": 332.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.265
+   },
+   {
+    "f0": 322.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.265
+   },
+   {
+    "f0": 324.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.265
+   },
+   {
+    "f0": 319.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.265
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.265
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.265
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.265
+   },
+   {
+    "f0": 723.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.265
+   }
+  ]
+ },
+ "shy": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 1.17,
+   "formants": [
+    460,
+    700
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.0,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 436.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 436.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 385.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 454.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 443.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 465.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 651.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 436.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 517.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 399.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 388.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 747.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   }
+  ]
+ },
+ "sleep": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 1.03,
+   "formants": [
+    600,
+    2520
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.009,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.009
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.009
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.009
+   },
+   {
+    "f0": 572.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.009
+   },
+   {
+    "f0": 677.9,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.009
+   },
+   {
+    "f0": 877.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.009
+   },
+   {
+    "f0": 562.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.009
+   },
+   {
+    "f0": 762.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.009
+   },
+   {
+    "f0": 595.9,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.009
+   },
+   {
+    "f0": 646.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.009
+   },
+   {
+    "f0": 846.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.009
+   },
+   {
+    "f0": 531.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.009
+   }
+  ]
+ },
+ "success": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 0.71,
+   "formants": [
+    640,
+    1100
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.123,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 630.0,
+    "dur": 0.237,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.123
+   },
+   {
+    "f0": 630.0,
+    "dur": 0.237,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.123
+   },
+   {
+    "f0": 630.0,
+    "dur": 0.237,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.123
+   },
+   {
+    "f0": 630.0,
+    "dur": 0.237,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.123
+   },
+   {
+    "f0": 630.0,
+    "dur": 0.237,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.123
+   },
+   {
+    "f0": 630.0,
+    "dur": 0.237,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.123
+   },
+   {
+    "f0": 630.0,
+    "dur": 0.237,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.123
+   },
+   {
+    "f0": 630.0,
+    "dur": 0.237,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.123
+   },
+   {
+    "f0": 630.0,
+    "dur": 0.237,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.123
+   },
+   {
+    "f0": 565.4,
+    "dur": 0.237,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.123
+   },
+   {
+    "f0": 551.2,
+    "dur": 0.237,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.123
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.237,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.123
+   }
+  ]
+ },
+ "surprised": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 1.01,
+   "formants": [
+    1040,
+    1240
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.077,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.077
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.077
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.077
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.077
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.077
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.077
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.077
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.077
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.077
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.077
+   },
+   {
+    "f0": 638.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.077
+   },
+   {
+    "f0": 639.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.077
+   }
+  ]
+ },
+ "thoughtful": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 1.3,
+   "formants": [
+    600,
+    1200
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.0,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 317.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 317.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 317.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 317.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 317.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 317.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 317.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 315.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 578.9,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 306.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 287.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 300.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   }
+  ]
+ },
+ "tired": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 0.75,
+   "formants": [
+    640,
+    1340
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.051,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 648.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.051
+   },
+   {
+    "f0": 648.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.051
+   },
+   {
+    "f0": 648.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.051
+   },
+   {
+    "f0": 426.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.051
+   },
+   {
+    "f0": 700.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.051
+   },
+   {
+    "f0": 678.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.051
+   },
+   {
+    "f0": 630.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.051
+   },
+   {
+    "f0": 620.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.051
+   },
+   {
+    "f0": 828.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.051
+   },
+   {
+    "f0": 644.9,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.051
+   },
+   {
+    "f0": 773.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.051
+   },
+   {
+    "f0": 760.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.051
+   }
+  ]
+ },
+ "uncertain": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 1.19,
+   "formants": [
+    640,
+    2340
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.054,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 558.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.054
+   },
+   {
+    "f0": 558.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.054
+   },
+   {
+    "f0": 558.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.054
+   },
+   {
+    "f0": 558.2,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.054
+   },
+   {
+    "f0": 560.9,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.054
+   },
+   {
+    "f0": 686.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.054
+   },
+   {
+    "f0": 588.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.054
+   },
+   {
+    "f0": 570.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.054
+   },
+   {
+    "f0": 735.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.054
+   },
+   {
+    "f0": 566.3,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.054
+   },
+   {
+    "f0": 565.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.054
+   },
+   {
+    "f0": 525.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.054
+   }
+  ]
+ },
+ "uncomfortable": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 1.25,
+   "formants": [
+    560,
+    2400
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.083,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 588.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.083
+   },
+   {
+    "f0": 588.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.083
+   },
+   {
+    "f0": 588.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.083
+   },
+   {
+    "f0": 588.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.083
+   },
+   {
+    "f0": 588.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.083
+   },
+   {
+    "f0": 588.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.083
+   },
+   {
+    "f0": 606.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.083
+   },
+   {
+    "f0": 589.4,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.083
+   },
+   {
+    "f0": 555.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.083
+   },
+   {
+    "f0": 518.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.083
+   },
+   {
+    "f0": 512.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.083
+   },
+   {
+    "f0": 469.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.083
+   }
+  ]
+ },
+ "understanding": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 1.11,
+   "formants": [
+    520,
+    700
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.062,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 454.6,
+    "dur": 0.242,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.062
+   },
+   {
+    "f0": 454.6,
+    "dur": 0.242,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.062
+   },
+   {
+    "f0": 454.6,
+    "dur": 0.242,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.062
+   },
+   {
+    "f0": 454.6,
+    "dur": 0.242,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.062
+   },
+   {
+    "f0": 454.6,
+    "dur": 0.242,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.062
+   },
+   {
+    "f0": 454.6,
+    "dur": 0.242,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.062
+   },
+   {
+    "f0": 454.6,
+    "dur": 0.242,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.062
+   },
+   {
+    "f0": 454.6,
+    "dur": 0.242,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.062
+   },
+   {
+    "f0": 467.5,
+    "dur": 0.242,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.062
+   },
+   {
+    "f0": 680.4,
+    "dur": 0.242,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.062
+   },
+   {
+    "f0": 478.9,
+    "dur": 0.242,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.062
+   },
+   {
+    "f0": 490.0,
+    "dur": 0.242,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.062
+   }
+  ]
+ },
+ "welcoming": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 0.9,
+   "formants": [
+    860,
+    1780
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.063,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 639.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.063
+   },
+   {
+    "f0": 639.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.063
+   },
+   {
+    "f0": 639.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.063
+   },
+   {
+    "f0": 639.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.063
+   },
+   {
+    "f0": 639.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.063
+   },
+   {
+    "f0": 639.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.063
+   },
+   {
+    "f0": 640.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.063
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.063
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.063
+   },
+   {
+    "f0": 848.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.063
+   },
+   {
+    "f0": 773.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.063
+   },
+   {
+    "f0": 700.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.063
+   }
+  ]
+ },
+ "yes": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 1.27,
+   "formants": [
+    420,
+    460
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.0,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 518.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 518.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 518.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 518.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 518.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 518.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 678.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 880.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 595.9,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 355.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 243.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   },
+   {
+    "f0": 150.0,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.0
+   }
+  ]
+ },
+ "yes_sad": {
+  "sr": 44100,
+  "voice": {
+   "harmonics": 9,
+   "tilt": 1.08,
+   "formants": [
+    420,
+    600
+   ],
+   "formant_q": 5.0,
+   "rasp": 0.04,
+   "vib_rate": 6.0,
+   "vib_depth": 0.05
+  },
+  "segments": [
+   {
+    "f0": 454.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.04
+   },
+   {
+    "f0": 454.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.04
+   },
+   {
+    "f0": 454.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.04
+   },
+   {
+    "f0": 454.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.04
+   },
+   {
+    "f0": 454.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.04
+   },
+   {
+    "f0": 454.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.04
+   },
+   {
+    "f0": 454.6,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.04
+   },
+   {
+    "f0": 518.8,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.04
+   },
+   {
+    "f0": 386.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.04
+   },
+   {
+    "f0": 335.7,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.04
+   },
+   {
+    "f0": 334.1,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.04
+   },
+   {
+    "f0": 344.5,
+    "dur": 0.25,
+    "ease": "smooth",
+    "amp": 1.0,
+    "vib_rate": 6.0,
+    "vib_depth": 0.05,
+    "rasp": 0.04
+   }
+  ]
+ }
+}
